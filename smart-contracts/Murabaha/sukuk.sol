@@ -62,7 +62,7 @@ contract Ownable {
 }
 
 
-contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTime {
+contract Sukuk is Context, ERC20Interface, Ownable, DateTime {
     using SafeMath for uint256;
 
     mapping (address => uint256) public _balances;
@@ -71,8 +71,8 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
 
 
     uint256 private _totalSupply;
-    string constant public name = "Murabaha";
-    string constant public symbol = "XMRB";
+    string constant public name = "Sukuk";
+    string constant public symbol = "SUKX";
     uint256 constant public decimals = 18;
     string constant public version = "0.0.1";
 
@@ -283,12 +283,11 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
     uint public gYearPayLast;
     uint public gPeriodPayLast;  //starts with 1,  <= gPeriodsPerYear
 
-    address gAddrSpv;
+    // link to 
+    address gAddrMurabaha;
 
-    int public gMonthlyPaymentValue;	// fixed monthly payment value (!) in cents (!)
     uint public gMonthsToPay;		// number of months to pay
 
-    // errCode = 1 -- gYearPayFirst, gPeriodPayFirst are not inited
     function getFinalYearPeriod() public view returns(uint finalYear, uint finalPeriod, uint errCode) {
         if( gYearPayFirst == 0 || gPeriodPayFirst == 0 ) {
             return (0, 0, 1);
@@ -305,23 +304,19 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
 
     }
 
-
-    constructor(int _monthlyPaymentValue, uint _monthsToPay, uint _yearPayFirst,
-             uint _periodPayFirst, address _addrSpv) public {
-        gMonthlyPaymentValue = _monthlyPaymentValue;
+    constructor( uint _monthsToPay, uint _yearPayFirst, uint _periodPayFirst, address _addrSpv ) public {
         gMonthsToPay = _monthsToPay;
         gYearPayFirst = _yearPayFirst;
         gPeriodPayFirst = _periodPayFirst;
-        gAddrSpv = _addrSpv;
+        gAddrMurabaha = _addrSpv;
 
         _totalSupply = 100 * 10**uint(decimals);
-        _balances[ gAddrSpv ] = _totalSupply;
-        emit Transfer(address(0), gAddrSpv, _totalSupply);
+        _balances[ gAddrMurabaha ] = _totalSupply;
+        emit Transfer(address(0), gAddrMurabaha, _totalSupply);
     }
 
     struct Payment{
         uint mongoId;
-        int signDebitCredit; // 0 = pending or error; 1 = success in homeowner payment; -1 = success in SPV transfer
         uint errorCode; // 0 - success, 1 - error with MongoPay
         uint day; // number of the payment day in the period starting from 1 (day of the month)
         int value; // in cents
@@ -347,7 +342,6 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
         return res;
     }
 
-
     /**
         errCode:
             1 = _indMortg is not in the range of the gMortgages indexes
@@ -356,39 +350,78 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
             4 = _period should not be zero == period number starts from 1 like months
             5 = gYearPayFirst, gPeriodPayFirst are not initialized
             6 = _year, _period are less then gYearPayFirst, gPeriodPayFirst
+            10 = Murabaha's transfer does not result in zero balance, payment is recorded with the difference in this case
+            11 = Murabaha's balance is zero before transfer
+            12 = Murabaha's transfer does not change its balance
+            13 = Murabaha's balance after transfer is greater than that before transfer
+            100+ = error in Murabaha's getBalance before transfer
+            10**20+ = error in Murabaha's getBalance after transfer
      */
     event evPaymentAdded(uint indexed _year, uint indexed _period, uint indexed _day,
-                 uint _newInd, int _value, int _signDebitCredit, uint _errCode);
-    function addPayment(uint _year, uint _period, uint _day, int _value, int _signDebitCredit) public onlyOwner {
+                 uint _newInd, int _value, uint _errCode);
+    function addPayment(uint _year, uint _period, uint _day) public onlyOwner {
         if( _year < 2000 ) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 2);
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 2);
             return;
         }
         if( _period > gPeriodsPerYear ) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 3);
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 3);
             return;
         }
         if( _period == 0 ) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 4);
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 4);
             return;
         }
         if( getPeriodInd( gYearPayFirst, gPeriodPayFirst) == 0 ) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 5);
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 5);
             return;
         }
         if( getPeriodInd(_year, _period) < getPeriodInd( gYearPayFirst, gPeriodPayFirst) ) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 6);
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 6);
             return;
         }
+
+    	//AY transfer of payments
+        MurabahaInterface murabaha = MurabahaInterface( gAddrMurabaha );
+        int _transferValue;
+        int _balance;
+        int _balance_after;
+        uint _errCode;
+
+        (_balance, _errCode) = murabaha.getTotalBalance();
+        if( _errCode != 0 ) {
+            emit evPaymentAdded(_year, _period, _day, 0, 0, (100 + _errCode) );
+            return;
+        }
+        if (_balance == 0 ) {
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 11);
+            return;
+        }
+
+        murabaha.transferMonthlyToSPV( _year, _period, _day);
+        _transferValue = _balance;
+
+        (_balance_after, _errCode) = murabaha.getTotalBalance();
+        if( _errCode != 0 ) {
+            emit evPaymentAdded(_year, _period, _day, 0, 0, (10**20 + _errCode) );
+            return;
+        }
+        if (_balance_after == _balance) {
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 12);
+            return;
+        }
+        if (_balance_after > _balance) {
+            emit evPaymentAdded(_year, _period, _day, 0, 0, 13);
+            return;
+        }
+        if (_balance_after != 0  &&  _balance_after != _balance) {
+            _transferValue = (_balance - _balance_after);
+        }
+
+        
         Payment memory _paym;
         _paym.day = _day;
-        _paym.value = _value;
-        _paym.signDebitCredit = _signDebitCredit;
-
-    	//AY transfer of stable coins (dollars)
-        //ERC20Interface usdToken = ERC20Interface( _usdTokenAddr );
-        //uint256 _decPowered = 10**usdToken.decimals();
-        //usdToken.transfer( gMortgages[_indMortg].accumAccount, _value*_decPowered );
+        _paym.value = _transferValue;
 
         gPayments[getPeriodInd(_year, _period)].dateLast = now;  // !!! TODO
         gPayments[getPeriodInd(_year, _period)].payments.push(_paym);
@@ -397,48 +430,15 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
             gPeriodPayLast = _period;
         }
         emit evPaymentAdded( _year, _period, _day,
-            gPayments[getPeriodInd(_year, _period)].payments.length, _value, _signDebitCredit, 0);
+            gPayments[getPeriodInd(_year, _period)].payments.length, _transferValue, 10);
     }
 
-    function addInstallment(uint _year, uint _period, uint _day, int _value) public onlyOwner {
-        addPayment(_year, _period, _day, _value, /* signDebitCredit = */ 1);
-    }
-    function addInstallmentNow(uint _day, int _value) public onlyOwner {
+    function addPaymentNow(uint _day) public onlyOwner {
         uint _year = getYear(now);
         uint _period = getMonth(now);
-        addPayment(_year, _period, _day, _value, /* signDebitCredit = */ 1);
+        addPayment(_year, _period, _day);
     }
 
-    /**
-        errCode:
-                0 = success
-                10, with value of getPeriodInd(_Bad_year, _Bad_period) = no SPV transfer (credit payment) before month _period of _year
-                1 = gYearPayFirst, gPeriodPayFirst was not initiated
-
-     */
-    function transferMonthlyToSPV(uint _year, uint _period, uint _day) public { ///// TO_DO !!!! onlyOwner is removed
-        //ERC20Interface usdToken = ERC20Interface( _usdTokenAddr );
-        //uint256 _decPowered = 10**usdToken.decimals();
-        //usdToken.transfer( gMortgages[_indMortg].accumAccount, _SPV, gMonthlyPayment );
-        int _arrears;
-        int _balance;
-        uint _errCode;
-        (_arrears, _errCode) = getTotalArrears(_year, _period);
-        if(_errCode != 0) {
-            emit evPaymentAdded(_year, _period, _day, _errCode, 0, 0, 10);
-            return;
-        }
-        (_balance, _errCode) = getTotalBalance();
-        if(_errCode != 0) {
-            emit evPaymentAdded(_year, _period, _day, 0, 0, 0, 1);
-            return;
-        }
-        int _value = gMonthlyPaymentValue + _arrears;
-        if(_value > _balance) {
-            _value = _balance;
-        }
-        addPayment(_year, _period, _day, _value, /* signDebitCredit = */ -1);
-    }
 
 
     /**
@@ -459,45 +459,17 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
             if( gPayments[getPeriodInd(_year, _period)].payments[i].deleted == true ) {
                 continue;
             }
-            int _payment = gPayments[getPeriodInd(_year, _period)].payments[i].value *
-                        gPayments[getPeriodInd(_year, _period)].payments[i].signDebitCredit;
+
+            int _payment = gPayments[getPeriodInd(_year, _period)].payments[i].value;
+
             if( (_payment + _value) < 0 ) {
                 return (0, 10+i);
             }
-            _value = _value + gPayments[getPeriodInd(_year, _period)].payments[i].value 
-                            * gPayments[getPeriodInd(_year, _period)].payments[i].signDebitCredit;
+            _value = _value + gPayments[getPeriodInd(_year, _period)].payments[i].value;
         }
         return (_value, 0);
     }
 
-    /**
-        returns:
-           _errCode:
-                0 = success
-                1 = PaymentArr was not initiated for this period
-                2 = No transfers to SPV for the period (no credit transactions)
-     */
-    function getPeriodArrears(uint _year, uint _period)
-             public view returns (int _value, uint _errCode) {
-
-        _value = 0;
-        if( gPayments[getPeriodInd(_year, _period)].dateLast == 0 ) {
-            return (0, 1);
-        }
-        for( uint i = 0; i < gPayments[getPeriodInd(_year, _period)].payments.length; i++ ) {
-            if( gPayments[getPeriodInd(_year, _period)].payments[i].deleted == true ) {
-                continue;
-            }
-            if( gPayments[getPeriodInd(_year, _period)].payments[i].signDebitCredit < 0 ) {
-                _value = _value + gPayments[getPeriodInd(_year, _period)].payments[i].value;
-            }
-        }
-
-        if( _value == 0 ) {
-            return (0, 2);
-        }
-        return ( gMonthlyPaymentValue - _value, 0);
-    }
 
     /**
         returns:
@@ -526,41 +498,6 @@ contract Murabaha is Context, MurabahaInterface, ERC20Interface, Ownable, DateTi
             for( uint _iPeriod = _perLoopFirst; _iPeriod <= _perLoopFinal; _iPeriod++ ) {
                 int _tempValue = 0;
                 (_tempValue, _errCode) = getPeriodBalance(_iYear, _iPeriod);
-                if(_errCode != 0) {
-                    continue;
-                }
-                _value = _value + _tempValue;
-            }
-        }
-        return (_value, 0);
-    }
-
-    /**
-        returns:
-           _errCode:
-                0 = success
-                getPeriodInd(_Bad_year, _Bad_period) = no SPV transfer (credit payment) before month _period of _year
-     */
-    function getTotalArrears(uint _year, uint _period) public view returns (int _value, uint _errCode) {
-        uint _yearFinal = _year;
-        uint _periodFinal = _period;
-        _value = 0;
-
-        for( uint _iYear = gYearPayFirst; _iYear <= _yearFinal; _iYear++ ) {
-            uint _perLoopFinal = gPeriodsPerYear;
-            if(  _iYear == _yearFinal ) {
-                _perLoopFinal = _periodFinal;
-            }
-            uint _perLoopFirst = 1;
-            if(  _iYear == gYearPayFirst ) {
-                _perLoopFirst = gPeriodPayFirst;
-            }
-            for( uint _iPeriod = _perLoopFirst; _iPeriod <= _perLoopFinal; _iPeriod++ ) {
-                int _tempValue = 0;
-                (_tempValue, _errCode) = getPeriodArrears(_iYear, _iPeriod);
-                if(_errCode == 2 && ( _iYear != _yearFinal || _iPeriod != _periodFinal ) ){
-                    return (0, getPeriodInd(_iYear, _iPeriod));
-                }
                 if(_errCode != 0) {
                     continue;
                 }
