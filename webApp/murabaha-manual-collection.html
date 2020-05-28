@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.4">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Murabaha Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.css">
+
+    <link rel="icon" href="images\favicon.png">
+</head>
+
+<body>
+		<div class="ui fixed inverted back medium menu">
+			<div class="ui container">
+                <a href='index.html' class="item">1. Transaction Setup</a>
+                <a href='notary.html' class="item">2. Notary Dashboard</a>
+                <a href='sukuk.html' class="item">3. Sukuk Dashboard  </a>
+                <a href='murabaha.html' class="item">4. Murabha Dashboard </a>
+                <a href='monitoring.html' class="item ">5. Monitoring Dashboard</a>
+                <a href='murabaha-manual-collection.html' class="item active">6. Manual Collection</a>
+			</div>
+		</div>
+		
+	<div class="row">
+		<p><br><br><br></p>
+	</div>
+
+
+	<div class="row">
+
+		<div class="ui three column grid">
+			
+			<div class="three wide column">
+			</div>
+			
+			<div class="ten wide column">	
+				<div class="ui raised segment">
+					<a class="ui purple left big ribbon label"><h4> Unresolved Installments</h4></a>
+					<p>
+				
+					
+					<table id="murabaha-table" class="ui single line small table striped ">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Timestamp</th>
+								<th>Capital</th>
+								<th>Reumn</th>
+								<th>Remb. Capital</th>
+								<th>Monthly Payment</th>
+								<th>Total Collected</th>
+								<th>Overall Status</th>
+                                <th>Payments List</th>
+                                <th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+						<tfoot>
+							<tr><th colspan="10">
+							  <div class="ui right floated pagination menu">
+								<a class="icon item">
+								  <i class="left chevron icon"></i>
+								</a>
+								<a class="item">1</a>
+								<a class="item">2</a>
+								<a class="item">3</a>
+								<a class="item">4</a>
+								<a class="icon item">
+								  <i class="right chevron icon"></i>
+								</a>
+							  </div>
+							</th>
+						  </tr></tfoot>
+					</table>
+
+				</div>
+			</div>	
+			
+			<div class="three wide column">
+			</div>
+
+		</div>
+	</div>
+	<div id="payments" class="ui modal">
+		<i class="close icon"></i>
+		<div class="header">
+		  Installment Payments List 
+		</div>
+			<div class="content">
+				<div class="container fluid">
+					<div class="row">
+						<div class="col-md-12">
+								<table id="payments-table" class="ui single line small table striped ">
+									<thead>
+										<tr>
+											<th>Id</th>
+											<th>Timestamp</th>
+											<th>Transaction Id</th>
+											<th>Status</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+                                </table>
+                                <div id="refunddiv" class="ui message" style="display: none;">
+                                    <div class="header">
+                                      Refund/Cancel SEPA Payment
+                                    </div>
+                                    <p id="refundmsg"></p>
+                            </div>     
+
+                                
+						</div>
+					</div>
+				</div>
+			</div>
+			 
+		 <div class="actions">
+		  <div class="ui black deny button">
+			Close 
+		  </div>
+		
+		</div>
+    </div> 
+
+    <div id="resolve" class="ui modal">
+            <i class="close icon"></i>
+            <div class="header">
+              Resolve Installment 
+            </div>
+                <div class="content">
+                    <div class="container fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                    <div class="row ui compact small form">
+                                            <div class="ui two column grid">
+                                                    <div class="eight wide column">
+                                                            <div class="field" id="eth_TimeBlockField">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Installments Id </div>
+                                                                    <input type="text" id="installmentId"  disabled>
+                                                                </div>
+                                                            </div>
+                                                                
+                                                            
+                                                            <div class="field" >
+                                                                <div class="ui">
+                                                                    <div class="ui labeled input">
+                                                                        <div style="width:40%" class="ui label"> Capital </div>
+                                                                        <input type="text" id="installmentCapital" disabled>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                           
+                                                            <div class="field" >
+                                                                <div class="ui">
+                                                                    <div class="ui labeled input">
+                                                                        <div style="width:40%" class="ui label"> Remb. Capital </div>
+                                                                        <input type="text" id="installmentRembCapital" disabled>
+                                                                    </div>
+                                                                </div>
+                                                            </div>  
+                                                            
+                                                            <div class="field" >
+                                                                <div class="ui">
+                                                                    <div class="ui labeled input">
+                                                                        <div style="width:40%" class="ui label"> Total Collected </div>
+                                                                        <input type="text" id="installmentTotalCollected" disabled>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                    </div>
+                                                    <div class="eight wide column">
+                                                        <div class="field" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Timestamp </div>
+                                                                    <input type="text" id="installmentTimestamp" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Reumn </div>
+                                                                    <input type="text" id="installmentRenum" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div> 
+                                                        <div class="field success" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Monthly Payment </div>
+                                                                    <input type="text" id="installmentMonthlyPayment" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field error" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%; background-color:#db2828; color: white;" class="ui label"> To be Payed </div>
+                                                                    <input type="text" id="installmentToPay" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                        <div class="ui divider"></div>
+                        <h3 class="header"> Add Installments Payments<a class="anchor" id="1A"></a></h3>
+                        <div class="row">
+                            <div class="col-md-12">
+                                    <div class="row ui compact small form">
+                                            <div class="ui two column grid">
+                                                    <div class="eight wide column">
+                                                            <div class="field" id="eth_TimeBlockField">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Transaction Id </div>
+                                                                    <input type="text" id="txId" placeholder="Transaction Id">
+                                                                </div>
+                                                            </div>
+                                                                
+                                                            
+                                                            <div class="field" >
+                                                                <div class="ui">
+                                                                    <div class="ui labeled input">
+                                                                        <div style="width:40%" class="ui label"> Value (€) </div>
+                                                                        <input type="text" id="value" placeholder="Value in EURO" min=0 max= 3000> 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="field" >
+                                                                    <div class="ui">
+                                                                        <div class="ui">
+                                                                            <button class="ui primary button" onclick="AddResolvedPayment()"> Add </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            
+                                                    </div>
+                                                    <div class="eight wide column">
+                                                        <div class="field" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Payment Type </div>
+                                                                    <select id="paymentType">
+                                                                        <option value="">Select ...</option>
+                                                                        <option value="SEPA">SEPA</option>
+                                                                        <option value="Cash">Cash</option>
+                                                                        <option value="Bank_wire">Bank wire</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field" >
+                                                            <div class="ui">
+                                                                <div class="ui labeled input">
+                                                                    <div style="width:40%" class="ui label"> Status </div>
+                                                                    <select id="paymentStatus">
+                                                                        <option value="">Select ...</option>
+                                                                        <option value="0">Success</option>
+                                                                        <option value="1">Fail</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div> 
+                                                        
+
+                                                    </div>
+                                            </div>
+                                    </div>
+                            </div>
+                         </div> <!--end row -->
+
+                        <div class="row">
+                            <div class="ui grid">
+                                <div class="sixteen wide column">
+
+                                        <div id="addresolvedpaymentdiv" class="ui message" style="display: none;">
+                                                <div class="header">
+                                                  Add Installment Payment
+                                                </div>
+                                                <p id="addresolvedpaymentmsg"></p>
+                                        </div> 
+                                </div>
+                            </div>
+                        </div> 
+                        
+                    </div>
+                </div>
+                 
+             <div class="actions">
+              <div class="ui black deny button">
+                Close 
+              </div>
+            
+            </div>
+        </div> 
+			
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+
+	<script src="js/aionapp.js?v0.007"></script>
+    <script src="js/manual-collection-table.js"></script>
+	
+
+ 
+</body>
+</html>
