@@ -1,14 +1,14 @@
 pragma solidity ^0.5.12;
 
 import './DateTime.sol';
-import './SignedSafeMath.sol';
+import './SafeMath.sol';
 
 //----------------------------------------------------------------------------
-// CXC Sukuk Smart Contract - signed integer
+// CXC Sukuk Smart Contract
 //----------------------------------------------------------------------------
 
 contract CXCSukuk is DateTime {
-    using SignedSafeMath for int256;
+    using SafeMath for uint256;
     address public owner;
     uint256 public NumberOfCoupons;
     uint256 public tenor = 10;
@@ -23,12 +23,12 @@ contract CXCSukuk is DateTime {
     struct Coupon{
         uint256 id;
         uint timestamp;
-        int256 capital;
-        int256 reumn;
-        int256 rembCapital;
+        uint256 capital;
+        uint256 reumn;
+        uint256 rembCapital;
         string status;
-        string TxId;
-        int256 value;
+        string mongopayTxId;
+        uint256 value;
     }
 
     mapping(uint256 => Coupon) public coupons;
@@ -37,7 +37,7 @@ contract CXCSukuk is DateTime {
     event ScheduleCouponEvent(uint256 id,uint256 timestamp, string status, bytes32 couponHash);
 
     // Event of updating of a scheduled coupon
-    event UpdateCouponEvent(uint256 id, string status, int256 value);
+    event UpdateCouponEvent(uint256 id, string status, uint256 value);
 
     constructor (string memory _profitRate, uint256 _principal, address _SPVAddr, address _investorAddr ) public {
         require(bytes(_profitRate).length > 0, 'Error101: Profit rate is required');
@@ -53,7 +53,7 @@ contract CXCSukuk is DateTime {
     }
 
     //Schedule coupon
-    function ScheduleCoupon(uint256 _timestamp, int256 _capital, int256 _reumn, int256 _rembCapital ) public returns (uint256){
+    function ScheduleCoupon(uint256 _timestamp, uint256 _capital, uint256 _reumn, uint256 _rembCapital ) public returns (uint256){
 
         require(_timestamp > 1588001180, 'Error105: Timestamp should be grater than 27, April 2020'); //1588001180=Monday,April27,202011:54:25PM
         require(_capital > 0, 'Error106: Capital grater than zero is required');
@@ -68,7 +68,7 @@ contract CXCSukuk is DateTime {
         _coupon.reumn = _reumn;
         _coupon.rembCapital = _rembCapital;
         _coupon.status = "Pending";
-        _coupon.TxId = "";
+        _coupon.mongopayTxId = "";
         _coupon.value = 0;
 
         bytes32 couponHash = keccak256(abi.encodePacked (_timestamp, _capital, _reumn, _rembCapital));
@@ -78,16 +78,16 @@ contract CXCSukuk is DateTime {
     }
 
    //Update coupon status
-   function UpdateCoupon(uint256 _id, string memory _status, string memory _TxId, int256 _value) public returns (bool)
+   function UpdateCoupon(uint256 _id, string memory _status, string memory _mongopayTxId, uint256 _value) public returns (bool)
    {
       require(_id > 0, 'Error118: Invalid Id value');
       require(coupons[_id].id > 0, 'Error109: Coupon does not Exist');
       require(_id > 0, 'Error110: None Zero value is required for Id');
       require(bytes(_status).length > 0, 'Error111: Status is required');
-      require(bytes(_TxId).length > 0, 'Error112: Transaction Id is required');
+      require(bytes(_mongopayTxId).length > 0, 'Error112: MongoPay transaction Id is required');
       require(_value >= 0, 'Error113: Coupon value should greter than or equal to zero');
         coupons[_id].status = _status;
-        coupons[_id].TxId = _TxId;
+        coupons[_id].mongopayTxId = _mongopayTxId;
         coupons[_id].value = _value;
 
         emit UpdateCouponEvent(_id, _status, _value);
@@ -95,12 +95,12 @@ contract CXCSukuk is DateTime {
    }
 
     // Get total coupons value per year
-    function TotalCouponsPerYear(uint256 _year) public returns(int256)
+    function TotalCouponsPerYear(uint256 _year) public returns(uint256)
     {
        require(_year>=2020 && _year < 2030, 'Error114: Invalid value of year');
         // Invoce Datatime smart contract
         DateTime date = new DateTime();
-        int256 totalCoupons = 0;
+        uint256 totalCoupons = 0;
         uint256 year;
         
         for(uint256 i = 0; i < NumberOfCoupons; i++)

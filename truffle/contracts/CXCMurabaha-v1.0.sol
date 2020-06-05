@@ -1,14 +1,14 @@
 pragma solidity ^0.5.12;
 
 import './DateTime.sol';
-import './SignedSafeMath.sol';
+import './SafeMath.sol';
 
 //----------------------------------------------------------------------------
-// CXC Murabaha Smart Contract - Signed integer
+// CXC Murabaha Smart Contract
 //----------------------------------------------------------------------------
 
 contract CXCMurabaha is DateTime {
-    using SignedSafeMath for int256;
+    using SafeMath for uint256;
     address public owner;
     uint256 public NumberOfInstallments;
     uint256 public tenor = 10;
@@ -31,7 +31,7 @@ contract CXCMurabaha is DateTime {
         uint256 timestamp;
         string paymentType; //SEPA, Bank Wire, Cash, Other
         string TxId;
-        int256 value;
+        uint256 value;
         uint256 status; //0: success, 1:Fail, 2: Cancelled
     }
 
@@ -40,12 +40,12 @@ contract CXCMurabaha is DateTime {
     struct Installment{
         uint256 id;
         uint timestamp;
-        int256 capital; //outstanding
-        int256 reumn; // profit
-        int256 rembCapital; //principal payment
+        uint256 capital; //outstanding
+        uint256 reumn; // profit
+        uint256 rembCapital; //principal payment
         string  overallstatus;
         uint256 paymentsLength;
-        int256 totalCollected;
+        uint256 totalCollected;
         mapping(uint256 => Payment) Payments;
     }
 
@@ -55,7 +55,7 @@ contract CXCMurabaha is DateTime {
     event ScheduleInstallmentEvent(uint256 id,uint256 timestamp ,string status, bytes32 installmentHash);
 
     // Event for updating of a scheduled installment
-    event UpdateInstallmentEvent(uint256 id, string status, int256 value);
+    event UpdateInstallmentEvent(uint256 id, string status, uint256 value);
 
     // Constructor
     constructor (string memory _profitRate, uint256 _principal, address _SPVAddr, address _obligorAddr ) public {
@@ -74,7 +74,7 @@ contract CXCMurabaha is DateTime {
     }
 
     //Schedule installment
-    function ScheduleInstallment(uint256 _timestamp, int256 _capital, int256 _reumn, int256 _rembCapital ) public
+    function ScheduleInstallment(uint256 _timestamp, uint256 _capital, uint256 _reumn, uint256 _rembCapital ) public
                                 onlyOwner returns (uint256){
 
         require(_timestamp > 1588001180, 'Error105: Timestamp should be grater than 27, April 2020'); //1588001180 = Monday, April 27, 2020 11:54:25 PM
@@ -98,14 +98,14 @@ contract CXCMurabaha is DateTime {
     }
 
    //Update installment status
-   function UpdateInstallment(uint256 _id, uint256 _status, string memory _TxId, int256 _value, string memory _paymentType) public
+   function UpdateInstallment(uint256 _id, uint256 _status, string memory _TxId, uint256 _value, string memory _paymentType) public
                             onlyOwner returns (bool)
    {
       require(_id > 0, 'Error118: Invalid Installment Id');
       require(installments[_id].id > 0, 'Error119: Installment does not Exist');
       require(_status >= 0, 'Error111: Status is required');
-      require(bytes(_TxId).length > 0, 'Error112: transaction Id is required');
-      //require(_value >= 0, 'Error120: Collected amount should greter than or equal to zero');
+      require(bytes(_TxId).length > 0, 'Error112: MongoPay transaction Id is required');
+      require(_value >= 0, 'Error120: Collected amount should greter than or equal to zero');
       
       Payment memory _temp;
       uint256 _paymentLenth = installments[_id].paymentsLength;
@@ -128,28 +128,29 @@ contract CXCMurabaha is DateTime {
       return true;
    }
 
-//    function UpdatePayment(uint256 _installmentId, uint256 _paymentId, string memory _TxId, int256 _value, uint256 _status) public {
-//        installments[_installmentId].Payments[_paymentId].value = _value;
-//        installments[_installmentId].Payments[_paymentId].TxId = _TxId;
-//        installments[_installmentId].Payments[_paymentId].status = _status;
-//        string memory _overallStatus = OverAllStatus(_installmentId);
-//        installments[_installmentId].overallstatus = _overallStatus;
-//        installments[_installmentId].totalCollected = GetPaymentsTotal(_installmentId);
-//        emit UpdateInstallmentEvent(_installmentId, _overallStatus, GetPaymentsTotal(_installmentId));
+   function UpdatePayment(uint256 _installmentId, uint256 _paymentId, string memory _TxId, uint256 _value, uint256 _status) public {
+       installments[_installmentId].Payments[_paymentId].value = _value;
+       installments[_installmentId].Payments[_paymentId].TxId = _TxId;
+       installments[_installmentId].Payments[_paymentId].status = _status;
 
-//    }
+       string memory _overallStatus = OverAllStatus(_installmentId);
+       installments[_installmentId].overallstatus = _overallStatus;
+       installments[_installmentId].totalCollected = GetPaymentsTotal(_installmentId);
+       emit UpdateInstallmentEvent(_installmentId, _overallStatus, GetPaymentsTotal(_installmentId));
+
+   }
 
     // Overall status calculation
     function OverAllStatus(uint256 _id) internal view returns(string memory)
     {
-        require(_id > 0,"Invalid installment Id");
+        require(_id > 0,"Invlaid installment Id");
         
         uint256 length = installments[_id].paymentsLength;
-        int256 sucessPayments = 0;
-        int256 failedPayments = 0;
-        int256 totalPayments = 0;
-        int256 refundedPayment = 0;
-        int256 monthlyPayment = installments[_id].reumn.add(installments[_id].rembCapital);
+        uint256 sucessPayments = 0;
+        uint256 failedPayments = 0;
+        uint256 totalPayments = 0;
+        uint256 refundedPayment=0;
+        uint256 monthlyPayment = installments[_id].reumn+installments[_id].rembCapital;
         
         for(uint256 i = 1; i <= length; i++)
         {
@@ -161,10 +162,10 @@ contract CXCMurabaha is DateTime {
             }
             else if (installments[_id].Payments[i].status == 2)
             {
-                refundedPayment = refundedPayment+1;
+                refundedPayment=refundedPayment+1;
             }
             
-            totalPayments = totalPayments.add(installments[_id].Payments[i].value);
+            totalPayments = totalPayments+installments[_id].Payments[i].value;
 
         }
         
@@ -182,7 +183,7 @@ contract CXCMurabaha is DateTime {
             return "Refunded";
     }
     
-    function GetPayments(uint256 _installmentId, uint256 _index) view public returns (uint256,uint256,int256,uint256,string memory, string memory)
+    function GetPayments(uint256 _installmentId, uint256 _index) view public returns (uint256,uint256,uint256,uint256,string memory, string memory)
     {
         require(_installmentId>0, "Invalid installments Id");
         require(_index <= installments[_installmentId].paymentsLength, "Invalid subPayments index");
@@ -195,14 +196,14 @@ contract CXCMurabaha is DateTime {
                 );
     }
     
-    function GetPaymentsTotal(uint256 _installmentId) view public returns (int256)
+    function GetPaymentsTotal(uint256 _installmentId) view public returns (uint256)
     {
         uint256 length = installments[_installmentId].paymentsLength;
-        int256 totalPayments = 0;
+        uint256 totalPayments = 0;
 
         for(uint256 i = 1; i <= length; i++)
         {
-            totalPayments = totalPayments.add(installments[_installmentId].Payments[i].value);
+            totalPayments = totalPayments+installments[_installmentId].Payments[i].value;
         }
         return totalPayments;
     }

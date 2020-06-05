@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+    $('#loadCoupons').addClass('active')
     let i=1  
     $.ajax({
     type: "GET",
@@ -25,7 +26,7 @@ $( document ).ready(function() {
                         
                     });
             }
-        
+         $('#loadCoupons').removeClass('active')
     }
 });
     
@@ -37,7 +38,7 @@ function getLabel(status)
     switch(status) {
         case "Success":
         case "0":    
-            return '<a class="item"> <div class="ui green horizontal label"> Completed</div></a>'
+            return '<a class="item"> <div class="ui green horizontal label"> Success</div></a>'
             break;
         case "Pending":
             return '<a class="item"> <div class="ui orange horizontal label"> Pending</div></a>'  

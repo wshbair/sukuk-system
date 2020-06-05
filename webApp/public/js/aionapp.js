@@ -427,6 +427,7 @@ function SaveStep1()
 
 function BroadcastSchedules()
 {
+	$('#notaryLoading').addClass('active')
 	$.ajax({
 		url: '/api/broadcast_installments_schedule',
 		type: 'POST',
@@ -434,6 +435,7 @@ function BroadcastSchedules()
 			console.log(response)
 			$('#msg1').show()
 			$('#msg1').html(response.msg)
+			$('#notaryLoading').removeClass('active')
 		},
 		error: function(err){
 			

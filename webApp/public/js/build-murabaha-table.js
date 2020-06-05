@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+    $('#loadInstallments').addClass('active')
     let i=1  
     $.ajax({
     type: "GET",
@@ -26,6 +27,8 @@ $( document ).ready(function() {
                             "</tr>" );
                     });
             }
+        $('#loadInstallments').removeClass('active')
+        
         
     }
 });

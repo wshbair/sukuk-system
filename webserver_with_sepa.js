@@ -180,7 +180,7 @@ app.post('/api/installment/update', function(req,res){
   id = req.body.id
   status = req.body.status
   TxId= req.body.TxId
-  value = req.body.value
+  value = parseInt(req.body.value).toFixed(0)
   type=req.body.type
 
   murabahaContractInstance.methods.UpdateInstallment(id,status,TxId,value,type)
@@ -633,6 +633,7 @@ function TriggerSchedule()
               var monthlyPayment= parseInt(installment.reumn)+ parseInt(installment.rembCapital)
               SPVCollectionAccount= SPVCollectionAccount+(monthlyPayment/100)
               const checkout = new CheckoutAPI(client);
+              
                 checkout.payments({
                     amount: { currency: "EUR", value: monthlyPayment/100},
                     paymentMethod: {
@@ -661,7 +662,7 @@ function TriggerSchedule()
                                     console.log('--> Coupon value: ', SPVCollectionAccount)
                                     console.log('===============================================')
                                     invertorAccount=SPVCollectionAccount+invertorAccount
-                                    sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount*100)
+                                    sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123", (SPVCollectionAccount | 0))
                                     .send({from:ownerAddress, gas:208408})
                                     .then(function(){
                                     SPVCollectionAccount=0
@@ -763,24 +764,26 @@ app.post('/api/payments/refundOrCancel', (req,res)=>{
     var value = req.body.value
     var paymentId =req.body.paymentId
     var installmentId=req.body.installmentId
+    //WrYfvxnhjF*K<P]2K}334CS{H
+
+
 
     var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payment/V52/cancelOrRefund')
     .headers({
-        'Authorization': 'Basic d3NAQ29tcGFueS5UZXN0QWNjb3VudDc4MTomS10zW0s4TUo5bmY6TkJeP3FRWjxLaF00',
+        'Authorization': 'Basic d3NAQ29tcGFueS5UZXN0QWNjb3VudDc4MTpXcllmdnhuaGpGKks8UF0yS30zMzRDU3tI',
         'Content-Type': 'application/json',
-        'Cookie': 'JSESSIONID=EE957A06CF6B7B15891D349174EF400C.test103e'
     })
     .send(JSON.stringify({"merchantAccount":"TestAccount781ECOM","originalReference":reference}))
     .end( async function (response) { 
+      console.log(response)
         if (response.error) throw new Error(response.error); 
-        //update blockchain with new status
-        await murabahaContractInstance.methods.UpdatePayment(installmentId,paymentId,reference,0,2)
+        //update blockchain with new status   
+        await murabahaContractInstance.methods.UpdateInstallment(installmentId,2,JSON.parse(response.raw_body).pspReference,(-value),"SEPA")
                     .send({from:ownerAddress, gas:208408})
                     .then(function(result){
                         SPVCollectionAccount= SPVCollectionAccount-value
                         res.send({'hash': result.transactionHash, "pspReference":JSON.parse(response.raw_body).pspReference, "response":JSON.parse(response.raw_body).response })
                     })
-
   });
 
 })

@@ -1,13 +1,15 @@
 $( document ).ready(function() {
-    
     var eventsHash=[];
     
     (function worker() {
+
+        $('#loadInstallmentsTxs').addClass('active')
         $.ajax({
             type: "GET",
             url: "/api/events",
                 success: function(result){
                     getAccounts()
+                     
                    //get installments
                    result.forEach(event=>{
                         if(!eventsHash.includes(event.transactionHash))
@@ -30,8 +32,9 @@ $( document ).ready(function() {
 
                     }, 
                     complete: function() {
+                        $('#loadInstallmentsTxs').removeClass('active')
                         // Schedule the next request when the current one's complete
-                        setTimeout(worker, 5000);
+                        setTimeout(worker, 10000);
                       }
         
          

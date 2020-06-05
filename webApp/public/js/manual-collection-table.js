@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+    $('#loadUnresolvedInstallments').addClass('active')
     let i=1  
     $.ajax({
     type: "GET",
@@ -32,7 +33,7 @@ $( document ).ready(function() {
 
                        
             }
-        
+        $('#loadUnresolvedInstallments').removeClass('active')   
     }
 });
     
