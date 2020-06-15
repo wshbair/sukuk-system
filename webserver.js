@@ -6,11 +6,11 @@ const multer = require('multer');
 var cors = require('cors')
 var bodyParser = require('body-parser')
 const Web3 = require('web3')
+var Personal = require('web3-eth-personal');
 const crypto = require('crypto');
+// const cron = require("node-cron");
 const reel = require('node-reel')
 var compression = require('compression')
-var unirest = require('unirest');
-
 
 //***************************************************************
 // Set your X-API-KEY with the API key from the Customer Area.
@@ -180,10 +180,9 @@ app.post('/api/installment/update', function(req,res){
   id = req.body.id
   status = req.body.status
   TxId= req.body.TxId
-  value = parseInt(req.body.value).toFixed(0)
-  type=req.body.type
+  value = req.body.value
 
-  murabahaContractInstance.methods.UpdateInstallment(id,status,TxId,value,type)
+  murabahaContractInstance.methods.UpdateInstallment(id,status,TxId,value)
   .send({from:ownerAddress, gas:208408})
   .on('confirmation', function(confirmationNumber, receipt)
   {
@@ -251,7 +250,7 @@ app.get('/api/installment/all', function(req,res){
         {
          await murabahaContractInstance.methods.GetPayments(id,i).call()
          .then(function(record){
-          Payments.push({'id': record[0], 'timestamp':record[1], 'value':record[2], 'status':record[3], 'TxId':record[4], 'paymentType':record[5]})
+          Payments.push({'id': record[0], 'timestamp':record[1], 'value':record[2], 'status':record[3], 'TxId':record[4]})
          })
         }
         res.json(Payments)
@@ -466,44 +465,31 @@ app.post('/api/counterparts/add', function(req,res){
 	var original_seller_address = req.body.original_seller_address
 	var solo_investor_name = req.body.solo_investor_name
 	var solo_investor_address = req.body.solo_investor_address
-	var solo_investor_payment_account = req.body.solo_investor_payment_account
+	var solo_investor_mogopay_account = req.body.solo_investor_mogopay_account
 	var solo_investor_eth_addr = req.body.solo_investor_eth_addr
   var purchaser_name = req.body.purchaser_name
 	var purchaser_address = req.body.purchaser_address  
-	var purchaser_payment_account = req.body.purchaser_payment_account
+	var purchaser_mongopay_account = req.body.purchaser_mongopay_account
   var purchaser_EthAddr = req.body.purchaser_EthAddr
 
-  var validation1A = req.body.validation1A
-  var validation1B = req.body.validation1B
-  var validation1C = req.body.validation1C
-
+  
   db.run('INSERT INTO counterparts(original_seller_name, original_seller_address'+
-         ',solo_investor_name,solo_investor_address,solo_investor_eth_address, solo_investor_payment_account_id,'+
-         'purchaser_name,purchaser_address,purchaser_eth_address,purchaser_payment_account_id,validation1A,validation1B,validation1C) values(?,?,?,?,?,?,?,?,?,?,?,?,?)', 
+         ',solo_investor_name,solo_investor_address,solo_investor_eth_address, solo_investor_mongopay_account_id,'+
+         'purchaser_name,purchaser_address,purchaser_eth_address,purchaser_mongopay_account_id) values(?,?,?,?,?,?,?,?,?,?)', 
          original_seller_name,original_seller_address,
-         solo_investor_name,solo_investor_address,solo_investor_eth_addr,solo_investor_payment_account,
-         purchaser_name, purchaser_address, purchaser_EthAddr,purchaser_payment_account, 
-         validation1A, validation1B, validation1C,
+         solo_investor_name,solo_investor_address,solo_investor_eth_addr,solo_investor_mogopay_account,
+         purchaser_name, purchaser_address, purchaser_mongopay_account,purchaser_EthAddr,
   (err,rows)=>{
     if(err)
-    {
-      console.log(err)
     res.json({
       'msg': 'Error! : '+ err
     });
-    }
     else
     res.json({
       'msg': 'Counterparts Information SAVED Successfully!'
     });
   })
 
-})
-//------------------------------------------------------------------------
-// Add Contracts
-//------------------------------------------------------------------------
-app.post('/api/add_contracts', function(req,res){
-   res.json({'msg': 'Contracts SAVED Successfully!'})
 })
 //------------------------------------------------------------------------
 // Upload Schedule
@@ -545,7 +531,6 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
           console.log("Error")
         }  
     }
-    saveFile2DB(req.file.originalname, req.body.scheduleType,filePath)
     res.json({
       'msg': 'File uploaded successfully!', 'file': req.file.originalname
     });
@@ -633,131 +618,49 @@ app.post('/api/trigger_schedule',(req,res)=>{
 
 function TriggerSchedule()
 {
-    const client = new Client({ config });
-    client.setEnvironment("TEST");
-
   reel().call(() => {
     console.log("::> Running a task every 1 minute");
     murabahaContractInstance.methods.installments(installmentId).call()
             .then(async function(installment){
-              if(installment.id !=0 && installment.overallstatus.localeCompare("Pending") ==0)
+              if(installment.id !=0 && installment.overallstatus.localeCompare("Success") !=0)
               {
               counter=counter+1
-              console.log("Counter: ", counter)  
+              console.log(" Counter: ", counter)  
               var monthlyPayment= parseInt(installment.reumn)+ parseInt(installment.rembCapital)
-              SPVCollectionAccount= SPVCollectionAccount+(monthlyPayment/100)
-              const checkout = new CheckoutAPI(client);
-              
-                checkout.payments({
-                    amount: { currency: "EUR", value: monthlyPayment/100},
-                    paymentMethod: {
-                        type: 'sepadirectdebit',
-                        ownerName: 'A. Grand',
-                        iban: 'FR1420041010050500013M02606'
-                    },
-                    reference: installment.id,
-                    merchantAccount: config.merchantAccount
-                }).then(async function(sepaRes){
-                    console.log('--> Installment Id: ', installmentId)
-                    console.log('===============================================')
-                    // add payment on spv collection account 
-                    AddRecordToSPVCollectionAccount(0,sepaRes.amount.value,sepaRes.pspReference, 'payin')
-                    //update blockchain with success
-                    await murabahaContractInstance.methods.UpdateInstallment(installment.id, sepaRes.resultCode.localeCompare("Authorised"),sepaRes.pspReference,sepaRes.amount.value, "SEPA")
-                    .send({from:ownerAddress, gas:208408})
-                    .then(function(res){
-                        installmentId=installmentId+1
-        
-                        if(counter==6)
-                        {
-                          // Get Coupon value from smart contract 
-                          murabahaContractInstance.methods.GetCouponValue(couponId).call()
-                          .then(function(SPVCollectionAccountBalance){
-                            //payout command   
-                            var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payout/v52/storeDetailAndSubmitThirdParty')
-                            .headers({
-                              'x-API-key': 'AQEphmfuXNWTK0Qc+iSEl3cshueYR55DGcQSCdkB2pddm2UQjN6Cw2pXS+gQwV1bDb7kfNy1WIxIIkxgBw==-rjptUwQ3ILf9Ydhg9b5IrNwR9RHhzQuPRB3oXdFreqE=-Xk}Q945CB.gNbs2<',
-                              'Content-Type': 'application/json',
+              obligorAccount=obligorAccount-mockupBalances[counter]
+              SPVCollectionAccount= SPVCollectionAccount+mockupBalances[counter]
+              console.log('--> Installment iD: ', installmentId)
+              console.log('--> SPV Collection account: ', SPVCollectionAccount)
+              console.log('--> Obligor Account: ', obligorAccount)
+              console.log('===============================================')
+              //update blockchain 
+              await murabahaContractInstance.methods.UpdateInstallment(installment.id,mockupStatus[counter],'234',mockupBalances[counter])
+              .send({from:ownerAddress, gas:208408})
+              .then(function(res){
+                installmentId=installmentId+1
+  
+                if(counter==6)
+                  {
+                    counter=0
+                    sukukContractInstance.methods.coupons(couponId).call()
+                      .then(function(coupon){
+                        if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
+                          {
+                            console.log('--> Coupon value: ', SPVCollectionAccount)
+                            console.log('===============================================')
+                            invertorAccount=SPVCollectionAccount+invertorAccount
+                            sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount)
+                            .send({from:ownerAddress, gas:208408})
+                            .then(function(){
+                              SPVCollectionAccount=0
+                              couponId=couponId+1
                             })
-                            .send(JSON.stringify({"amount":{"currency":"EUR","value":SPVCollectionAccountBalance},"bank":{"countryCode":"NL","ownerName":"S. Hopper","iban":"NL13TEST0123456789"},"shopperName":{"firstName":"Simon","gender":"MALE","lastName":"Hopper"},"nationality":"NL","dateOfBirth":"1982-07-17","entityType":"NaturalPerson","merchantAccount":"TestAccount781ECOM","recurring":{"contract":"PAYOUT"},"reference":"YOUR_REFERENCE","shopperEmail":"s.hopper@company.com","shopperReference":"YOUR_UNIQUE_SHOPPER_ID"}))
-                            .end(function (res) { 
-                              if (res.error) throw new Error(res.error); 
-                             
-                              console.log("SEPA PAYOUT ", JSON.parse(res.raw_body).pspReference);
-
-                              // Blockchain operation 
-                              counter=0
-                              sukukContractInstance.methods.coupons(couponId).call()
-                              .then(function(coupon){
-                                  if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
-                                  {
-                                      console.log('--> Coupon value: ', SPVCollectionAccountBalance)
-                                      console.log('===============================================')
-                                      AddRecordToSPVCollectionAccount(0,(SPVCollectionAccountBalance*-1), JSON.parse(res.raw_body).pspReference, 'payout')
-                                      invertorAccount=SPVCollectionAccount+invertorAccount
-                                      sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123", (SPVCollectionAccountBalance | 0))
-                                      .send({from:ownerAddress, gas:208408})
-                                      .then(function(){                                  
-                                      couponId=couponId+1
-                                      })
-                                  }
-                                  else
-                                  couponId=couponId+1
-                              })
-
-
-
-                              
-                            });
-
-
-
-                          })
-
-
-                          /* // first get balance total
-                          db.all('SELECT SUM(value) as total FROM spv_collection_account', (err,rows)=>{
-                            SPVCollectionAccountBalance = rows[0].total
-                            
-                            //--------------------------
-                           }) */
-                        }
-                    })
-
-                })
-                .catch(async (err)=>{ // Update blockchain with fail/error 
-                    console.log(err)
-                     //update blockchain with success
-                     await murabahaContractInstance.methods.UpdateInstallment(installment.id,1,err.pspReference,0)
-                     .send({from:ownerAddress, gas:208408})
-                     .then(function(res){
-                         installmentId=installmentId+1
-         
-                         if(counter==6)
-                         {
-                             counter=0
-                             sukukContractInstance.methods.coupons(couponId).call()
-                             .then(function(coupon){
-                                 if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
-                                 {
-                                     console.log('--> Coupon value: ', SPVCollectionAccount)
-                                     console.log('===============================================')
-                                     invertorAccount=SPVCollectionAccount+invertorAccount
-                                     sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount)
-                                     .send({from:ownerAddress, gas:208408})
-                                     .then(function(){
-                                     SPVCollectionAccount=0
-                                     couponId=couponId+1
-                                     })
-                                 }
-                                 else
-                                 couponId=couponId+1
-                             })
-                         }
-                     })
- 
-                })
-              
+                          }
+                          else
+                          couponId=couponId+1
+                      })
+                  }
+              })
               
               }
               else
@@ -805,68 +708,102 @@ app.get('/api/events', (req,res)=>{
     }
     res.send(accounts)
   })
-})
-
-app.post('/api/payments/refundOrCancel', (req,res)=>{
-
-    var reference = req.body.reference
-    var value = req.body.value
-    var paymentId =req.body.paymentId
-    var installmentId=req.body.installmentId
-    //WrYfvxnhjF*K<P]2K}334CS{H
 
 
 
-    var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payment/V52/cancelOrRefund')
-    .headers({
-        'Authorization': 'Basic d3NAQ29tcGFueS5UZXN0QWNjb3VudDc4MTpXcllmdnhuaGpGKks8UF0yS30zMzRDU3tI',
-        'Content-Type': 'application/json',
-    })
-    .send(JSON.stringify({"merchantAccount":"TestAccount781ECOM","originalReference":reference}))
-    .end( async function (response) { 
-      
-        if (response.error) throw new Error(response.error); 
-        AddRecordToSPVCollectionAccount(0,(-value), JSON.parse(response.raw_body).pspReference, 'Refund')
-        //update blockchain with new status   
-        await murabahaContractInstance.methods.UpdateInstallment(installmentId,2,JSON.parse(response.raw_body).pspReference,(-value),"SEPA")
-                    .send({from:ownerAddress, gas:208408})
-                    .then(function(result){
-                        SPVCollectionAccount= SPVCollectionAccount-value
-                        res.send({'hash': result.transactionHash, "pspReference":JSON.parse(response.raw_body).pspReference, "response":JSON.parse(response.raw_body).response })
-                    })
-  });
+
 
 })
 
+//**********************************
+//strip operation 
 
-//------------------------------------------------------------------------
-// Verification
-//------------------------------------------------------------------------
-app.get('/api/verification/files', (req,res)=>{
-  db.all('SELECT Distinct type FROM file_uploads', (err,rows)=>{
-  res.json(rows)
-})
-})
 
-app.get('/api/verification/counterparts', (req,res)=>{
-  db.all('SELECT  validation1A,validation1B,validation1C  FROM counterparts ORDER by id DESC LIMIT 1', (err,rows)=>{
-    res.json(rows)
-  })
-}) 
+async function stripOperation() {
+//   console.log('calling');
+//   stripe.customers.create({
+//     email: 'customer@example.com',
+//   })
+//     .then(customer => console.log(customer.id))
+//     .catch(error => console.error(error));
+// } id = cus_HIhwuni6g2Wt6M
+const intent = await stripe.paymentIntents.create({
+  amount: 1099,
+  currency: 'eur',
+  setup_future_usage: 'off_session',
+  customer: 'cus_HIhwuni6g2Wt6M',
+  payment_method_types: ['sepa_debit'],
+  // Verify your integration in this guide by including this parameter
+  metadata: {integration_check: 'sepa_debit_accept_a_payment'},
 
-//------------------------------------------------------------------------
-// SPV Collection Account
-//------------------------------------------------------------------------
-function AddRecordToSPVCollectionAccount(timestamp, value, transactionId,type)
-{
-  //value is positive for payin and negative for payout
-  db.run('INSERT INTO spv_collection_account (timestamp, value, type, transaction_Id) VALUES(?,?,?,?)',
-  timestamp, value, type,transactionId, (err,rows)=>{
-    if (err)
-    console.log(err)
-  }
-  )
-}
+})}
 
-//------------------------------------------------------------------------
+
+//stripOperation()
+// Expose a endpoint as a webhook handler for asynchronous events.
+// Configure your webhook in the stripe developer dashboard
+// https://dashboard.stripe.com/test/webhooks
+// app.post("/webhook", async (req, res) => {
+//   let data, eventType;
+
+//   // Check if webhook signing is configured.
+//   if (process.env.STRIPE_WEBHOOK_SECRET) {
+//     // Retrieve the event by verifying the signature using the raw body and secret.
+//     let event;
+//     let signature = req.headers["stripe-signature"];
+//     try {
+//       event = stripe.webhooks.constructEvent(
+//         req.rawBody,
+//         signature,
+//         process.env.STRIPE_WEBHOOK_SECRET
+//       );
+//     } catch (err) {
+//       console.log(`⚠️  Webhook signature verification failed.`);
+//       return res.sendStatus(400);
+//     }
+//     data = event.data;
+//     eventType = event.type;
+//   } else {
+//     // Webhook signing is recommended, but if the secret is not configured in `config.js`,
+//     // we can retrieve the event data directly from the request body.
+//     data = req.body.data;
+//     eventType = req.body.type;
+//   }
+
+//   if (eventType === "payment_intent.succeeded") {
+//     // Funds have been captured
+//     // Fulfill any orders, e-mail receipts, etc
+//     // To cancel the payment you will need to issue a Refund (https://stripe.com/docs/api/refunds)
+//     console.log("💰 Payment received!");
+//   } else if (eventType === "payment_intent.payment_failed") {
+//     console.log("❌ Payment failed.");
+//   }
+//   res.sendStatus(200);
+// });
+
+
+// const client = new Client({ config });
+// client.setEnvironment("TEST");
+
+// const checkout = new CheckoutAPI(client);
+// checkout.payments({
+//     amount: { currency: "EUR", value: 1000 },
+//     paymentMethod: {
+//         type: 'sepadirectdebit',
+//         ownerName: 'A. Schneider',
+//         iban: 'DE87123456781234567890'
+//     },
+//     reference: "YOUR_ORDER_NUMBER",
+//     merchantAccount: config.merchantAccount
+// }).then(function(res){
+//     console.log(res)
+// })
+// .catch((err)=>{
+//     console.log(err)
+//   })
+
+
+
 app.listen(3000, () => console.log('Web app listening at http://localhost:3000'))
+
+

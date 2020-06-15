@@ -224,7 +224,7 @@ function Refund(installmentId, paymentId, reference, value)
 		type: 'POST',
 		data: data,
 		success: function (response) {
-            console.log(response.hash)
+            
             $('#refunddiv').show()
             $('#refunddiv').addClass('positive')
             $('#refundmsg').html("- SEPA Response: "+ response.response +"<br>"+ 

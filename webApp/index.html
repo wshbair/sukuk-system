@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=0.4">
 	
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>System Setup</title>
+    <title>Transaction Setup</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.0/semantic.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
@@ -13,11 +13,7 @@
 
     <style>
      
-    #sig-canvas {
-    border: 2px dotted #CCCCCC;
-    border-radius: 15px;
-    cursor: crosshair;
-    }
+   
     </style>
 </head>
 
@@ -44,6 +40,7 @@
                 <div class="ten wide column">	
                     <div class="ui raised segment">
                         <a class="ui purple left big ribbon label"><h4> Transaction Setup </h4></a>
+                        <div id="transactionSetup" class="ui inline loader"></div>										
                         <br><br>
                         <div class="ui ordered top attached steps">
 
@@ -147,8 +144,8 @@
                                                         <div class="field">
                                                                 <div class="ui calendar">
                                                                     <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> MongoPay Account </div>
-                                                                        <input type="text" id="solo_investor_mogopay_account" placeholder="MongoPay Account ">
+                                                                        <div style="width:30%" class="ui label"> Payment Account </div>
+                                                                        <input type="text" id="solo_investor_payment_account" placeholder="Payment Account ">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -208,8 +205,8 @@
                                                         <div class="field"  >
                                                                 <div class="ui calendar">
                                                                     <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> MongoPay Account </div>
-                                                                        <input type="text" id="purchaser_mongopay_account" placeholder="MongoPay Account ">
+                                                                        <div style="width:30%" class="ui label"> Payment Account </div>
+                                                                        <input type="text" id="purchaser_payment_account" placeholder="Payment Account ">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -280,8 +277,11 @@
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Title dead </div>
-                                                                    <input type="file" name="" >
+                                                                    <input type="file" id="titleDead" onchange="UploadFile('titleDead')" >
                                                                 </div>
+                                                            </div>
+                                                            <div id="titleDead_msg" class="ui message" style="display: none;" >
+                                                                
                                                             </div>
                                                         </div>
                                                     </div>
@@ -319,8 +319,10 @@
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> PUV Contract </div>
-                                                                    <input type="file" name="" >
+                                                                    <input type="file" id="puvContract" onchange="UploadFile('puvContract')" >
                                                                 </div>
+                                                            </div>
+                                                            <div id="puvContract_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -357,9 +359,11 @@
                                                         <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
-                                                                    <div style="width:30%" class="ui label"> PUA Contracts </div>
-                                                                    <input type="file" name="" >
+                                                                    <div style="width:30%" class="ui label"> PUA Contract </div>
+                                                                    <input type="file" id="puaContract" onchange="UploadFile('puaContract')" >
                                                                 </div>
+                                                            </div>
+                                                            <div id="puaContract_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -367,9 +371,9 @@
                                         </div>
                                         <div class="ui divider"></div>
 
-                                        <!-- 2.D SPV KYC Docuemnts -->
+                                        <!-- 2.D SPV KYC Documents -->
                                         <div class="row ui compact small form">
-                                            <h3 class="ui dividing header"><div class="ui orange horizontal label">2.D</div> SPV KYC Docuemnts<a class="anchor" id="2C"></a></h3>
+                                            <h3 class="ui dividing header"><div class="ui orange horizontal label">2.D</div> SPV KYC Document<a class="anchor" id="2C"></a></h3>
 
                                             <div class="ui two column grid">
                                                 <div class="eight wide column">
@@ -395,9 +399,11 @@
                                                         <div class="field"  >
                                                                 <div class="ui">
                                                                     <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> SPV KYC Docuemnt </div>
-                                                                        <input type="file" name="" >
+                                                                        <div style="width:30%" class="ui label"> SPV KYC Document </div>
+                                                                        <input type="file" id="spvKycDocument" onchange="UploadFile('spvKycDocument')" >
                                                                     </div>
+                                                                </div>
+                                                                <div id="spvKycDocument_msg" class="ui message" style="display: none;">
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -405,10 +411,10 @@
                                         </div>
                                         <div class="ui divider"></div>
 
-                                        <!-- 2.E CxC Finance KYC Docuemnts -->
+                                        <!-- 2.E CxC Finance KYC Documents -->
                                         <div class="row ui compact small form">
                                             <h3 class="ui header"> </h3>
-                                            <h3 class="ui dividing header"><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Docuemnts<a class="anchor" id="2E"></a></h3>
+                                            <h3 class="ui dividing header"><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Documents<a class="anchor" id="2E"></a></h3>
 
                                             <div class="ui two column grid">
                                                     <div class="eight wide column">
@@ -436,8 +442,10 @@
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> CXC KYC Document </div>
-                                                                    <input type="file" name="" >
+                                                                    <input type="file" id="cxcKycDocument" onchange="UploadFile('cxcKycDocument')" >
                                                                 </div>
+                                                            </div>
+                                                            <div id="cxcKycDocument_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -475,15 +483,17 @@
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label">  Sukuk Certificate </div>
-                                                                    <input type="file" name="" >
+                                                                    <input type="file" id="sukukCertificate" onchange="UploadFile('sukukCertificate')" >
                                                                 </div>
+                                                            </div>
+                                                            <div id="sukukCertificate_msg" class="ui message" style="display: none;" >
                                                             </div>
                                                         </div>
                                                         <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Coupons Schedule </div>
-                                                                    <input type="file" id="coupons" onchange="UploadSchedule('coupons')" >
+                                                                    <input type="file" id="coupons" onchange="UploadSchedule('coupons')" accept=".xls,.xlsx" >
                                                                 </div>
                                                             </div>
                                                             <div id="coupons_msg" class="ui message" style="display: none;">
@@ -523,15 +533,17 @@
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Murabha Agreement </div>
-                                                                    <input type="file">
+                                                                    <input type="file" id="murabaAgreement" onchange="UploadFile('murabaAgreement')">
                                                                 </div>
+                                                            </div>
+                                                            <div id="murabaAgreement_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
                                                         <div class="field">
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Installments Schedule </div>
-                                                                    <input type="file" id="installments" onchange="UploadSchedule('installments')" >
+                                                                    <input type="file" id="installments" onchange="UploadSchedule('installments')"  >
                                                                 </div>
                                                             </div>
                                                             <div id="installments_msg" class="ui message" style="display: none;">
@@ -545,8 +557,11 @@
                                      
                                     
                                     <div class="ui divider"></div>
-                                    <button class="ui primary right  button" onclick="Prev2()">Pervouis Section</button>
+                                    <button class="ui green right  button" onclick="SaveStep2()">Save</button>
+                                    <button class="ui primary right  button" onclick="Prev2()">Pervious Section</button>
                                     <button class="ui primary right  button" onclick="Next2()">Next Section</button>
+                                    <div id="SaveStep2_msg" class="ui message" style="display: none;"></div>
+
                             
                             </div>
                             
@@ -560,7 +575,7 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.A</div> ERC20 Token<a class="anchor" id="3A"></a></h3>
                                             <div class="ui form">
-                                                    <div class="field">
+                                                    <!-- <div class="field">
                                                         <div class="two fields">
                                                         <div class="field">
                                                             <label>Token name</label>
@@ -571,12 +586,12 @@
                                                             <input type="text" placeholder="Token Symbol">
                                                         </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                         
-                                                    <div class="field">
+                                                    <!-- <div class="field">
                                                         <div class="two fields">
                                                         <div class="field">
-                                                            <label> Deceimal</label>
+                                                            <label> Decimal</label>
                                                             <input type="text" placeholder="Deceimal">
                                                         </div>
                                                         <div class="field">
@@ -584,20 +599,19 @@
                                                             <input type="text" placeholder="Total Supply">
                                                         </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                         
                                                     <div class="field">
                                                             <div class="two fields">
-                                                            <div class="field">
+                                                           <!--  <div class="field">
                                                                 <label>Ethereum Blockchain</label>
                                                                 <select>
                                                                     <option value="">Testnet (Rinkeby)</option>
                                                                     <option value="1">Mainnet</option>
                                                                 </select>
-                                                            </div>
+                                                            </div> -->
                                                             <div class="field">
-                                                                    <label>Audit Smart Contract Code</label>
-                                                                    <button class="ui gray button" onclick="AuditCode()" >View Code</button>
+                                                                    <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                         </div>
@@ -610,7 +624,7 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.B</div> Murabaha<a class="anchor" id="3B"></a></h3>
                                             <div class="ui form">
-                                                    <div class="field">
+                                                    <!-- <div class="field">
                                                         <div class="two fields">
                                                         <div class="field">
                                                             <label>Contract Id</label>
@@ -634,8 +648,8 @@
                                                             <input type="text" placeholder="Profit Rate">
                                                         </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="field">
+                                                    </div> -->
+                                                   <!--  <div class="field">
                                                         <div class="two fields">
                                                             <div class="field">
                                                                 <label>Principal </label>
@@ -646,20 +660,19 @@
                                                             <input type="text" placeholder="IRR">
                                                         </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                         
                                                     <div class="field">
                                                             <div class="two fields">
-                                                            <div class="field">
+                                                           <!--  <div class="field">
                                                                 <label>Payment frequency</label>
                                                                 <select>
                                                                     <option value="">Semi Annual</option>
                                                                     <option value="1">Monthly </option>
                                                                 </select>
-                                                            </div>
+                                                            </div> -->
                                                             <div class="field">
-                                                                <label>Audit Smart Contract Code</label>
-                                                                <button class="ui gray button" onclick="AuditCode()" >View Code</button>
+                                                                 <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                         </div>
@@ -671,7 +684,7 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.C</div> Sukuk<a class="anchor" id="3B"></a></h3>
                                             <div class="ui form">
-                                                    <div class="field">
+                                                    <!-- <div class="field">
                                                         <div class="two fields">
                                                         <div class="field">
                                                             <label>Contract Id</label>
@@ -682,9 +695,9 @@
                                                             <input type="text" placeholder="Tenor">
                                                         </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                         
-                                                    <div class="field">
+                                                   <!--  <div class="field">
                                                         <div class="two fields">
                                                         <div class="field">
                                                             <label>Issuer</label>
@@ -695,8 +708,8 @@
                                                             <input type="text" placeholder="Profit Rate">
                                                         </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="field">
+                                                    </div> -->
+                                                    <!-- <div class="field">
                                                         <div class="two fields">
                                                             <div class="field">
                                                                 <label>Principal </label>
@@ -707,20 +720,19 @@
                                                             <input type="text" placeholder="IRR">
                                                         </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                         
                                                     <div class="field">
                                                             <div class="two fields">
-                                                            <div class="field">
+                                                           <!--  <div class="field">
                                                                 <label>Payment Frequency</label>
                                                                 <select>
                                                                     <option value="">Semi Annual</option>
                                                                     <option value="1">Monthly </option>
                                                                 </select>
-                                                            </div>
+                                                            </div> -->
                                                             <div class="field">
-                                                                <label>Audit Smart Contract Code</label>
-                                                                <button class="ui gray button" onclick="AuditCode()" >View Code</button>
+                                                                <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                     </div>
@@ -736,7 +748,7 @@
                             </div>
                             <div class="ui divider"></div>
 
-                            <button class="ui primary right  button" onclick="Prev3()">Pervouis Section</button>
+                            <button class="ui primary right  button" onclick="Prev3()">Pervious Section</button>
                             <button class="ui primary right  button" onclick="Next3()">Next Section</button>
                         </div>
                         <!-- Step 4 -->
@@ -747,102 +759,89 @@
                                               <tr>
                                                 <th>Section</th>
                                                 <th class="center aligned">Validation</th>
-                                                <th class="center aligned"> Status</th>
                                               </tr>
                                                
                                             </thead>
                                             <tbody>
                                               
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui teal horizontal label">1.A</div> Original Seller Information</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                    <i id="A1" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="negative">
+                                            <tr class="info">
                                                 <td><div class="ui teal horizontal label">1.B</div> Solo Investor Information</td>
                                                 <td class="center aligned">
-                                                    <i class="large red close icon"></i>
+                                                        <i id="B1" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui red horizontal label">Missing Id</div></td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui teal horizontal label">1.C</div> Murabah Obligor/Purchaser</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="C1" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                              </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui orange horizontal label">2.A</div> Title Dead</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="A2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui orange horizontal label">2.B</div> Unilateral Sale Undertaking (PUV)</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="B2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui orange horizontal label">2.C</div>Unilateral Purchase Undertaking (PUA)</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="C2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
-                                                <td><div class="ui orange horizontal label">2.D</div> SPV KYC Docuemnts</td>
+                                            <tr class="info">
+                                                <td><div class="ui orange horizontal label">2.D</div> SPV KYC Documents</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="D2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
-                                                <td><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Docuemnts</td>
+                                            <tr class="info">
+                                                <td><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Documents</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="E2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr >
-                                            <tr class="positive">
-                                                <td><div class="ui orange horizontal label">2.F</div>Sukuk Certificate & Coupons Schdeule </td>
+                                            <tr class="info">
+                                                <td><div class="ui orange horizontal label">2.F</div>Sukuk Certificate & Coupons Schedule </td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="F2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
-                                                <td><div class="ui orange horizontal label">2.G</div> Murabaha Agreement & Installments Schdeule</td>
+                                            <tr class="info">
+                                                <td><div class="ui orange horizontal label">2.G</div> Murabaha Agreement & Installments Schedule</td>
                                                 <td class="center aligned">
-                                                    <i class="large green checkmark icon"></i>
+                                                        <i id="G2" class="large icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui violet horizontal label">3.A</div> ERC20 Token Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui violet horizontal label">3.B</div> Murabaha Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
                                             </tr>
-                                            <tr class="positive">
+                                            <tr class="info">
                                                 <td><div class="ui violet horizontal label">3.C</div> Sukuk Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
-                                                <td class="center aligned"><div class="ui green horizontal label">Approved</div> </td>
+                                                
                                             </tr>
                                             
 
@@ -852,12 +851,11 @@
                                             </tbody>
                                     </table>
 
-                                    <div class="ui fluid card">
+                                <!--     <div class="ui fluid card">
                                             <div class="content">
                                               <div class="header">E-Signature and Submission</div>
                                             </div>
                                             <div class="content">
-                                               	<!-- Content -->
                                                 <div class="container fluid">
                                                         <div class="row">
                                                             <div class="col-md-12">
@@ -903,7 +901,7 @@
                                                     <button class="ui purple button">Submit To Notary</button>
                                                   </div>
                                             
-                                    </div>
+                                    </div> -->
                                     
 
 
@@ -917,6 +915,8 @@
                 </div>
             </div>
         </div>
+    </div>
+
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
@@ -926,7 +926,7 @@
     <script src="js\aionapp.js?v0.007"> </script>
 	
 
-    <div id="sign" class="ui modal">
+    <!-- <div id="sign" class="ui modal">
             <i class="close icon"></i>
             <div class="header">
               Ledger HD Wallet (not connected)
@@ -953,10 +953,10 @@
                 <i class="checkmark icon"></i>
               </div>
             </div>
-    </div>
+    </div> -->
 
 
-    <div id="code" class="ui modal">
+   <div id="code" class="ui modal">
         <div class="header">Smart Contract Source Code</div>
         <div class="scrolling content">
                 <div class="description">
@@ -966,12 +966,12 @@
                 </div>
               </div>
               <div class="actions">
-                <div class="ui primary approve button">
+                 <div class="ui primary approve button">
                   Proceed
                   <i class="right chevron icon"></i>
-                </div>
+                </div> 
               </div>
-    </div>      
+    </div> 
 
 </body>
 </html>
