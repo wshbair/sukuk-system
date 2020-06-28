@@ -1,3 +1,5 @@
+![logo](https://github.com/wshbair/sukuk-system/blob/master/webApp/public/images/logo.png)
+
 # Sukuk and Murabaha Tokonization
 
 One Paragraph of project description goes here
