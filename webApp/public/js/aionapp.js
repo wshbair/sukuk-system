@@ -1,23 +1,19 @@
+$( document ).ready(function() {
+	//Load Data from database 
+	loadData()
+	
+})
 
 var uploadedFiles = [];
 
-/* $('.menu .item')
-.tab()
-;
-$('.ui.accordion')
-  .accordion()
-; */
-	
-	
-
-function AuditCode()
+function ViewCode(code)
 {
 	event.preventDefault();
-	$('#code').modal('show');
-	console.log("123")
-
-
+	$('#'+code+'Code').modal('show');
 }
+
+
+
 
 function deploySmartContract()
 {
@@ -169,15 +165,17 @@ function Prev3()
 
 function view()
   {
-	  $('#transactionDetails').show()
-	  $('#ShowButton').html('Hide')
-	  
-
+	$('#transactionDetails').toggle()
   }
 
 function Sign()  
   {
 	$('#transactionDetails').show()
+    $('#sign').modal('show');
+  
+
+
+
 
   }
 
@@ -350,7 +348,8 @@ function UploadFile(filename)
 			  $('#'+filename+'_msg').css("display", "block");
 			  $('#'+filename+'_msg').addClass('success')
 			  $('#'+filename+'_msg').text('File uploaded Successfully')
- 			  uploadedFiles.push({[filename]: response.file})
+			   uploadedFiles.push({[filename]: response.file})
+			   loadData()
 			},
 			error: function(err){
 			  $('#'+filename+'_msg').css("display", "block");
@@ -402,27 +401,27 @@ function SaveStep1()
 
 	var solo_investor_name = $('#solo_investor_name').val()
 	var solo_investor_address = $('#solo_investor_address').val()
-	var solo_investor_payment_account = $('#solo_investor_payment_account').val()
+	var solo_investor_payment_account_id = $('#solo_investor_payment_account_id').val()
 	var solo_investor_eth_addr = $('#solo_investor_eth_addr').val()
 
 	var purchaser_name = $('#purchaser_name').val()
-	var purchaser_payment_account = $('#purchaser_payment_account').val()
+	var purchaser_payment_account_id = $('#purchaser_payment_account_id').val()
 	var purchaser_EthAddr = $('#purchaser_EthAddr').val()
 	var purchaser_address = $('#purchaser_address').val()
 
 	var validation1A = (isEmpty(original_seller_name)&& isEmpty(original_seller_address))
-	var validation1B = (isEmpty(solo_investor_name)&&isEmpty(solo_investor_address)&&isEmpty(solo_investor_payment_account)&&isEmpty(solo_investor_eth_addr))
-	var validation1C = (isEmpty(purchaser_name)&&isEmpty(purchaser_address)&&isEmpty(purchaser_payment_account)&&isEmpty(purchaser_EthAddr))
+	var validation1B = (isEmpty(solo_investor_name)&&isEmpty(solo_investor_address)&&isEmpty(solo_investor_payment_account_id)&&isEmpty(solo_investor_eth_addr))
+	var validation1C = (isEmpty(purchaser_name)&&isEmpty(purchaser_address)&&isEmpty(purchaser_payment_account_id)&&isEmpty(purchaser_EthAddr))
 
 	var data = {
 		'original_seller_name': original_seller_name,
 		'original_seller_address': original_seller_address,
 		'solo_investor_name':solo_investor_name,
 		'solo_investor_address':solo_investor_address,
-		'solo_investor_payment_account':solo_investor_payment_account,
+		'solo_investor_payment_account_id':solo_investor_payment_account_id,
 		'solo_investor_eth_addr':solo_investor_eth_addr,
 		'purchaser_name':purchaser_name,
-		'purchaser_payment_account': purchaser_payment_account,
+		'purchaser_payment_account_id': purchaser_payment_account_id,
 		'purchaser_EthAddr': purchaser_EthAddr,
 		'purchaser_address': purchaser_address,
 		'validation1A': validation1A,
@@ -468,37 +467,48 @@ async function SaveStep2()
 	$('#SaveStep2_msg').html(msg)
 	$('#transactionSetup').removeClass('active')
 }
+//--------------------------------------------------------
+// Publish Coupon on Blockchain 
+//--------------------------------------------------------
+/* function BroadcastCoupons()
+{
+  $('#notaryLoading').addClass('active')
+  $.ajax({
+		url: '/api/broadcast_coupons_schedule',
+		type: 'POST',
+		success: function (response) {
+ 			$('#msg2').show()
+			$('#msg2').html(response.msg)
+			$('#notaryLoading').removeClass('active')
+		},
+		error: function(err){
+			console.log(err)	
+			$('#notaryLoading').removeClass('active')
 
-function BroadcastSchedules()
+		}
+	});
+
+	
+} */
+//--------------------------------------------------------
+// Publish Installments on Blockchain
+//--------------------------------------------------------
+/* function BroadcastInstallments()
 {
 	$('#notaryLoading').addClass('active')
 	$.ajax({
 		url: '/api/broadcast_installments_schedule',
 		type: 'POST',
 		success: function (response) {
-			console.log(response)
-			$('#msg1').show()
+ 			$('#msg1').show()
 			$('#msg1').html(response.msg)
 			$('#notaryLoading').removeClass('active')
 		},
 		error: function(err){
-			
+			console.log(err)
+			$('#notaryLoading').removeClass('active')
 		}
 	});
-
-	$.ajax({
-		url: '/api/broadcast_coupons_schedule',
-		type: 'POST',
-		success: function (response) {
-			console.log(response)
-			$('#msg2').show()
-			$('#msg2').html(response.msg)
-		},
-		error: function(err){
-			
-		}
-	});
-
 }
 
 function TriggerSchedule()
@@ -516,7 +526,7 @@ function TriggerSchedule()
 		}
 	});
 
-}
+} */
 
 function isEmpty(str) {
     return !(!str || 0 === str.length);
@@ -558,13 +568,18 @@ function GetVerification()
 			else
 			$('#C1').addClass('red close')
 
-        
-        
-        
+			// If all are valid, you can transfer to notary
+			if(JSON.parse(result[0].validation1A) && JSON.parse(result[0].validation1B) &&JSON.parse(result[0].validation1C) )
+			{
+				$('#send2notary').prop('disabled', false);
+			}
+			else 
+			$('#send2notary').prop('disabled', true);
     }
 });
 
-$.ajax({
+ 
+	$.ajax({
     type: "GET",
     url: "/api/verification/files",
         success: async function(result){
@@ -620,10 +635,64 @@ $.ajax({
    
     }
 });
+ 
+}
 
+function loadData(){
+	$.ajax({
+		type: "GET",
+		url: "/api/load_data",
+			success: function(result){
+			 $('#original_seller_name').val(result.original_seller_name)
+			 $('#original_seller_address').val(result.original_seller_address)
+			 $('#original_seller_id').val(result.original_seller_id)
+			 $('#solo_investor_name').val(result.solo_investor_name)
+			 $('#solo_investor_address').val(result.solo_investor_address)
+			 $('#solo_investor_payment_account_id').val(result.solo_investor_payment_account_id)
+			 $('#solo_investor_eth_addr').val(result.solo_investor_eth_address)
+			 $('#purchaser_name').val(result.purchaser_name)
+			 $('#purchaser_address').val(result.purchaser_address)
+			 $('#purchaser_payment_account_id').val(result.purchaser_payment_account_id)
+			 $('#purchaser_EthAddr').val(result.purchaser_eth_address)
 
+			 //Documents Link 
+			 $("#titleDeadLink").attr("href", "/"+result.titleDead);
+			 $("#puaContractLink").attr("href", "/"+result.puaContract);
+			 $("#murabaAgreementLink").attr("href", "/"+result.murabaAgreement);
+			 $("#sukukCertificateLink").attr("href", "/"+result.sukukCertificate);
+			 $("#installmentsLink").attr("href", "/"+result.installments);
+			 $("#couponsLink").attr("href", "/"+result.coupons);
+			 $("#cxcKycDocumentLink").attr("href", "/"+result.cxcKycDocument);
+			 $("#spvKycDocumentLink").attr("href", "/"+result.spvKycDocument);
+			 $("#puvContractLink").attr("href", "/"+result.puvContract);
+ 			},
+			error: function(err){
+				console.log(err)
+			}
+	});
+}
 
+function Send2Notary()
+{
+	event.preventDefault();
+	$('#transactionSetup').addClass('active')	
+	$.ajax({
+		type: "POST",
+		url: "/api/verification/send2notary",
+			success: async function(result){
+				console.log(result[0])
+				$('#transactionSetup').removeClass('active')
+				$('#send2notarymsg').addClass('green')
+				$('#send2notarymsg').html('Request sent to Notary')
+				$('#send2notarymsg').show()
 
+		},
+		error: function(err){
+			$('#transactionSetup').removeClass('active')
+			$('#send2notarymsg').addClass('red')
+			$('#send2notarymsg').html('Error')
+			$('#send2notarymsg').show()
 
-
+		}
+	});
 }

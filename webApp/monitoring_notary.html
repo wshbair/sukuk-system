@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.4">
+	
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Monitoring Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
+	<link rel="icon" href="images\favicon.png">
+	<link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+		<div class="ui three column grid">
+				<div class="three wide column">
+				</div>
+				<div class="ten wide column">
+					<img src="images/logo.png" width="80px" class="ui left tiny image">
+					<div class="ui inverted large menu">  
+						<a href='/' class="item">Home</a>
+						<a href='notary.html' class="item">Notary Dashboard</a>>
+						<a href='sukuk-notary.html' class="item ">Sukuk Dashboard  </a>
+                        <a href='murabaha-notary.html' class="item">Murabha Dashboard </a>
+                        <a href='monitoring_notary.html' class="item active ">Monitoring Dashboard</a>                              
+					</div>
+				</div>
+			</div>
+	
+	
+	<div class="row">
+
+		<div class="ui three column grid">
+			
+			<div class="three wide column">
+			</div>
+			
+			<div class="ten wide column">	
+				<div class="ui raised segment">
+					<a class="ui purple left big ribbon label"><h4> Recent Smart Contract Transactions</h4></a>
+					<div id="loadInstallmentsTxs" class="ui active inline loader"></div>										
+				
+					<table id="events-table" class="ui single line small table">
+						<thead>
+							<tr>
+								<th>Type</th>	
+								<th>Id</th>								
+								<th>Block Number</th>
+								<th>Value</th>
+								<th>Tx Hash</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							
+
+						</tbody>
+					</table>
+
+				</div>
+			</div>	
+			
+			<div class="three wide column">
+			</div>
+
+		</div>
+	</div>
+
+			
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+
+
+	<script src="js\aionapp.js?v0.007"> </script>
+    <script src="js\events-monitoring-table.js"> </script>
+	
+	
+
+
+</body>
+</html>

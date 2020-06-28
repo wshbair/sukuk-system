@@ -6,11 +6,28 @@ const multer = require('multer');
 var cors = require('cors')
 var bodyParser = require('body-parser')
 const Web3 = require('web3')
-var Personal = require('web3-eth-personal');
 const crypto = require('crypto');
-// const cron = require("node-cron");
 const reel = require('node-reel')
 var compression = require('compression')
+var unirest = require('unirest');
+var sha1 = require('sha1');
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+const {spawn } = require('child_process');
+
+
+const options = {
+  defaultAccount: '0x9fc3d36C008ACDb4f1Aa15046850050478a988A1',
+  defaultBlock: 'latest',
+  defaultGas: 1,
+  defaultGasPrice: 0,
+  transactionBlockTimeout: 50,
+  transactionConfirmationBlocks: 2,
+  transactionPollingTimeout: 480, 
+ }
+
+var provider = new HDWalletProvider('885dd679ff168a152d7492bcfb85cf5d4cc6312d7f329442168f5b18c00e5f31', "https://rinkeby.infura.io/v3/cedb2f80c0cd4a3c99a668222fe86a49")
 
 //***************************************************************
 // Set your X-API-KEY with the API key from the Customer Area.
@@ -21,23 +38,17 @@ config.apiKey = 'AQEphmfuXNWTK0Qc+iSEl3cshueYR55DGcQSCdkB2pddm2UQjN6Cw2pXS+gQwV1
 config.merchantAccount = 'TestAccount781ECOM';
 //***************************************************************
 
-
-mockupBalances =[191655, 1000, 0,191655, 0,0, 200, 191655,191655]
-mockupStatus =  [0, 0, 1,0, 1,1, 0, 0,0]
-
-
-var SPVReserverAccount=0
 var SPVCollectionAccount=0
 var invertorAccount=0
 var obligorAccount=30000000
-var installmentCount=0
 var installmentId=1
 var couponId=1
 var counter=0
 
 global.__basedir = __dirname;
-//const web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/zGrJXk8tdDdrmZ6afes2"));
-const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+const web3 = new Web3(provider,null, options);
+//const web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/cedb2f80c0cd4a3c99a668222fe86a49"));
+//const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 console.log('[web3]::: version '+web3.version)
 
 //--------------------------------------------------------------
@@ -60,6 +71,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 app.use(express.static('./webApp/public'))
+app.use(express.static('./webApp/uploads/'))
+
 app.use(compression())
 
 //--------------------------------------------------------------
@@ -118,26 +131,37 @@ function saveFile2DB(name, type, filePath)
 //--------------------------------------------------------------
 // Smart contracts configuration 
 //--------------------------------------------------------------
-
+try
+{
 //Murabaha
+//var cxcMurabaha = require("./truffle/contracts/CXCMurabaha.json");
+//var murabahaContractAddr=Object.values(cxcMurabaha.networks)[0].address;
+
 var cxcMurabaha = require("./truffle/contracts/CXCMurabaha.json");
-var murabahaContractAddr=Object.values(cxcMurabaha.networks)[0].address;
+var murabahaContractAddr= require("./murabaha_contract_address.json").address
 var murabahaContractInstance= new web3.eth.Contract(cxcMurabaha.abi,murabahaContractAddr);
 
 //Sukuk 
+//var cxcSukuk = require("./truffle/contracts/CXCSukuk.json");
+//var sukukContractAddr=Object.values(cxcSukuk.networks)[0].address;
+
 var cxcSukuk = require("./truffle/contracts/CXCSukuk.json");
-var sukukContractAddr=Object.values(cxcSukuk.networks)[0].address;
+var sukukContractAddr= require("./sukuk_contract_address.json").address
 var sukukContractInstance= new web3.eth.Contract(cxcSukuk.abi,sukukContractAddr);
+}
+catch(err)
+{
+  console.log('[Smart Contract] Error In Smart contracts')
+  console.log(err)
+}
 
-var ownerAddress=""
-web3.eth.getAccounts().then( function(s){
-  ownerAddress=s[0];
-})
 
+var ownerAddress="0x9fc3d36C008ACDb4f1Aa15046850050478a988A1"
+ 
 //--------------------------------------------------------------
 // Main web pages
 //--------------------------------------------------------------
-app.get('/', (req, res) => res.sendFile(__dirname + '/webApp/index.html'))
+app.get('/', (req, res) => res.sendFile(__dirname + '/webApp/default.html'))
 app.get('/index.html', (req, res) => res.sendFile(__dirname + '/webApp/index.html'))
 app.get('/sukuk.html', (req, res) => res.sendFile(__dirname + '/webApp/sukuk.html'))
 app.get('/monitoring.html', (req,res)=> res.sendFile(__dirname + '/webApp/monitoring.html'))
@@ -145,15 +169,16 @@ app.get('/murabaha.html', (req,res)=> res.sendFile(__dirname + '/webApp/murabaha
 app.get('/notary.html', (req,res)=> res.sendFile(__dirname + '/webApp/notary.html'))
 app.get('/mandate.html', (req,res)=>res.sendFile(__dirname+'/webApp/mandate.html'))
 app.get('/murabaha-manual-collection.html', (req,res)=>res.sendFile(__dirname+'/webApp/murabaha-manual-collection.html'))
+app.get('/sukuk_investor.html', (req,res)=>res.sendFile(__dirname+'/webApp/sukuk_investor.html'))
+app.get('/monitoring_agent.html', (req,res)=> res.sendFile(__dirname + '/webApp/monitoring_agent.html'))
+app.get('/sukuk-notary.html', (req,res)=> res.sendFile(__dirname + '/webApp/sukuk-notary.html'))
+app.get('/monitoring_notary.html', (req,res)=> res.sendFile(__dirname + '/webApp/monitoring_notary.html'))
+app.get('/murabaha-notary.html', (req,res)=> res.sendFile(__dirname + '/webApp/murabaha-notary.html'))
+
 
 //--------------------------------------------------------------
-// Platform APIs
-//--------------------------------------------------------------
-
-//******************************************
 // Murabha Contract
-//******************************************
-
+//--------------------------------------------------------------
 // Add Murabha installment 
 app.post('/api/installment/add', function(req,res){
   timestamp = req.body.timestamp
@@ -162,7 +187,7 @@ app.post('/api/installment/add', function(req,res){
   rembCapital= req.body.rembCapital
 
   murabahaContractInstance.methods.ScheduleInstallment(timestamp, capital, reumn, rembCapital)
-  .send({from:ownerAddress, gas:208408})
+  .send({from:ownerAddress, gas:208408}) 
   .on('confirmation', function(confirmationNumber, receipt)
   {
     res.json(receipt)
@@ -180,9 +205,10 @@ app.post('/api/installment/update', function(req,res){
   id = req.body.id
   status = req.body.status
   TxId= req.body.TxId
-  value = req.body.value
+  value = parseInt(req.body.value).toFixed(0)
+  type=req.body.type
 
-  murabahaContractInstance.methods.UpdateInstallment(id,status,TxId,value)
+  murabahaContractInstance.methods.UpdateInstallment(id,status,TxId,value,type)
   .send({from:ownerAddress, gas:208408})
   .on('confirmation', function(confirmationNumber, receipt)
   {
@@ -198,18 +224,16 @@ app.post('/api/installment/update', function(req,res){
   });
 
 })
-
-
 // Get all installments
 app.get('/api/installment/all', function(req,res){
   allInstallment =[]
   murabahaContractInstance.methods.NumberOfInstallments().call()
-  .then(function(len){
+  .then(async function(len){
     if(len > 0)
     {
       for(i=1; i<=len; i++)
         {
-          murabahaContractInstance.methods.installments(i).call()
+          await murabahaContractInstance.methods.installments(i).call()
           .then(function(result){
             allInstallment.push(result)
             if(allInstallment.length==len)
@@ -250,7 +274,7 @@ app.get('/api/installment/all', function(req,res){
         {
          await murabahaContractInstance.methods.GetPayments(id,i).call()
          .then(function(record){
-          Payments.push({'id': record[0], 'timestamp':record[1], 'value':record[2], 'status':record[3], 'TxId':record[4]})
+          Payments.push({'id': record[0], 'timestamp':record[1], 'value':record[2], 'status':record[3], 'TxId':record[4], 'paymentType':record[5]})
          })
         }
         res.json(Payments)
@@ -315,9 +339,9 @@ app.get('/api/murabaha/overview/obligoraddress', function(req,res){
   murabahaContractInstance.methods.obligorAddr().call()
   .then(function(result) {res.json({"obligorAddress": result}) } )
 })
-//******************************************
+//--------------------------------------------------------------
 //Sukuk Contract
-//******************************************
+//--------------------------------------------------------------
 // Add Sukuk coupon 
 app.post('/api/coupon/add', function(req,res){
   timestamp = req.body.timestamp
@@ -381,12 +405,12 @@ app.post('/api/coupon/total', function(req,res){
 app.get('/api/coupon/all', function(req,res){
   allCoupons =[]
   sukukContractInstance.methods.NumberOfCoupons().call()
-  .then(function(len){
+  .then(async function(len){
     if(len > 0)
     {
       for(i=1; i<=len; i++)
         {
-          sukukContractInstance.methods.coupons(i).call()
+          await sukukContractInstance.methods.coupons(i).call()
           .then(function(result){
             allCoupons.push(result)
             if(allCoupons.length==len)
@@ -448,14 +472,19 @@ app.get('/api/sukuk/overview/investorAddress', function(req,res){
   .then(function(result) {res.json({"investorAddr": result}) } )
 })
 
-//******************************************
+//--------------------------------------------------------------
 // Platform operation
-//******************************************
+//--------------------------------------------------------------
 app.get('/api/ethereum/address', function(req,res){
-  web3.eth.personal.newAccount('!@superpassword'+ Math.random())
-  .then(function(result){
-    res.json(result)
-  });
+  // const EthWallet = Wallet
+  // console.log("address: " + EthWallet.getAddressString());
+  // console.log("privateKey: " + EthWallet.getPrivateKeyString());
+  res.json('0x'+sha1('!@superpassword'+ Math.random()))
+  
+  // web3.eth.personal.newAccount()
+  // .then(function(result){
+  //   res.json(result)
+  // });
 })
 //------------------------------------------------------------------------
 // Add Counterpart
@@ -465,31 +494,44 @@ app.post('/api/counterparts/add', function(req,res){
 	var original_seller_address = req.body.original_seller_address
 	var solo_investor_name = req.body.solo_investor_name
 	var solo_investor_address = req.body.solo_investor_address
-	var solo_investor_mogopay_account = req.body.solo_investor_mogopay_account
+	var solo_investor_payment_account_id = req.body.solo_investor_payment_account_id
 	var solo_investor_eth_addr = req.body.solo_investor_eth_addr
   var purchaser_name = req.body.purchaser_name
 	var purchaser_address = req.body.purchaser_address  
-	var purchaser_mongopay_account = req.body.purchaser_mongopay_account
+	var purchaser_payment_account_id = req.body.purchaser_payment_account_id
   var purchaser_EthAddr = req.body.purchaser_EthAddr
 
-  
+  var validation1A = req.body.validation1A
+  var validation1B = req.body.validation1B
+  var validation1C = req.body.validation1C
+
   db.run('INSERT INTO counterparts(original_seller_name, original_seller_address'+
-         ',solo_investor_name,solo_investor_address,solo_investor_eth_address, solo_investor_mongopay_account_id,'+
-         'purchaser_name,purchaser_address,purchaser_eth_address,purchaser_mongopay_account_id) values(?,?,?,?,?,?,?,?,?,?)', 
+         ',solo_investor_name,solo_investor_address,solo_investor_eth_address, solo_investor_payment_account_id,'+
+         'purchaser_name,purchaser_address,purchaser_eth_address,purchaser_payment_account_id,validation1A,validation1B,validation1C) values(?,?,?,?,?,?,?,?,?,?,?,?,?)', 
          original_seller_name,original_seller_address,
-         solo_investor_name,solo_investor_address,solo_investor_eth_addr,solo_investor_mogopay_account,
-         purchaser_name, purchaser_address, purchaser_mongopay_account,purchaser_EthAddr,
+         solo_investor_name,solo_investor_address,solo_investor_eth_addr,solo_investor_payment_account_id,
+         purchaser_name, purchaser_address, purchaser_EthAddr,purchaser_payment_account_id, 
+         validation1A, validation1B, validation1C,
   (err,rows)=>{
     if(err)
+    {
+      console.log(err)
     res.json({
       'msg': 'Error! : '+ err
     });
+    }
     else
     res.json({
       'msg': 'Counterparts Information SAVED Successfully!'
     });
   })
 
+})
+//------------------------------------------------------------------------
+// Add Contracts
+//------------------------------------------------------------------------
+app.post('/api/add_contracts', function(req,res){
+   res.json({'msg': 'Contracts SAVED Successfully!'})
 })
 //------------------------------------------------------------------------
 // Upload Schedule
@@ -531,6 +573,7 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
           console.log("Error")
         }  
     }
+    saveFile2DB(req.file.originalname, req.body.scheduleType,filePath)
     res.json({
       'msg': 'File uploaded successfully!', 'file': req.file.originalname
     });
@@ -540,77 +583,45 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
 
 //------------------------------------------------------------------------
 // Broadcast coupons schedule in blockchain
-const sleep = (milliseconds) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
+//------------------------------------------------------------------------
+// we need to resume from where it stopped
+app.post('/api/broadcast_coupons_schedule', async (req,res)=>{
+ // const compute = fork('broadcastCoupon.js',[], {detached:true});
+  const options = {silent:false,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  child = spawn('node', ['broadcastCoupon.js'], options);
+  child.on('message', (data) => {
+      console.log(data);
+      child.unref();
+      process.exit(0);
+  });
 
-app.post('/api/broadcast_coupons_schedule', (req,res)=>{
-  db.all('SELECT * FROM temp_coupons', (err,rows)=>{
-     counter=0
-    const forLoop = async _ => {
-    
-      for (let index = 0; index < 10; index++) {
-        timestamp = parseInt(rows[index].Date)
-        capital = parseInt(rows[index].Capital)
-        reumn = parseInt(rows[index].Remun)
-        rembCapital = parseInt(rows[index].Remb_Capital)
-
-        await sukukContractInstance.methods.ScheduleCoupon(timestamp, capital, reumn, rembCapital)
-        .send({from:ownerAddress, gas:208408})
-        .on('confirmation', function(confirmationNumber, receipt)
-        {
-         // console.log('--> New coupon is registered', confirmationNumber)
-
-         })
-        .on('error', function(error){
-          console.log(error)
-        });
-
-       }
-    }
-    forLoop().then(function(error,result){
-      res.json({
-        'msg': 'Coupons registration transactions are sent !'
-      })
-    })
-
-  
-   
-
-  })
-  
-
+  res.json({
+    'msg': 'Coupons are sent! WAIT CONFIRMATION ...'
+  })  
 })
 
+//------------------------------------------------------------------------
 // Broadcast installments schedule in blockchain
+//------------------------------------------------------------------------
 app.post('/api/broadcast_installments_schedule', (req,res)=>{
-  db.all('SELECT * FROM temp_installments', (err,rows)=>{
-     counter=0
-    const forLoop = async _ => {
-     
-      for (let index = 0; index < 60; index++) {
-        timestamp = rows[index].Date
-        capital = parseInt(rows[index].Capital)
-        reumn = parseInt(rows[index].Remun)
-        rembCapital = parseInt(rows[index].Remb_Capital)
+  //const installments = fork('broadcastInstallments.js',{detached:true})
 
-        await murabahaContractInstance.methods.ScheduleInstallment(timestamp, capital, reumn, rembCapital)
-        .send({from:ownerAddress, gas:208408})
-        .on('confirmation', function(confirmationNumber, receipt)
-        {
-         })
-        .on('error', function(error){
-        })
-       }
-    }
-    forLoop().then(function(error,result){
-       res.json({
-        'msg': 'Installments registration transaction are sent !'
-      })
-    })
-  })
+  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  child = spawn('node', ['broadcastInstallments.js'], options);
+  child.on('message', (data) => {
+      console.log(data);
+      child.unref();
+      process.exit(0);
+  });
+
+  res.json({
+    'msg': 'Installments are sent! WAIT CONFIRMATION ...'
+  })  
 })
 
+//------------------------------------------------------------------------
+// Trigger the Payment Schedule  
+//------------------------------------------------------------------------
 app.post('/api/trigger_schedule',(req,res)=>{
   TriggerSchedule()
   res.sendStatus(200)
@@ -618,49 +629,115 @@ app.post('/api/trigger_schedule',(req,res)=>{
 
 function TriggerSchedule()
 {
+  const client = new Client({ config });
+  client.setEnvironment("TEST");
+
   reel().call(() => {
     console.log("::> Running a task every 1 minute");
     murabahaContractInstance.methods.installments(installmentId).call()
             .then(async function(installment){
-              if(installment.id !=0 && installment.overallstatus.localeCompare("Success") !=0)
+              if(installment.id !=0 && installment.overallstatus.localeCompare("Pending") ==0)
               {
               counter=counter+1
-              console.log(" Counter: ", counter)  
+              console.log("Counter: ", counter)  
               var monthlyPayment= parseInt(installment.reumn)+ parseInt(installment.rembCapital)
-              obligorAccount=obligorAccount-mockupBalances[counter]
-              SPVCollectionAccount= SPVCollectionAccount+mockupBalances[counter]
-              console.log('--> Installment iD: ', installmentId)
-              console.log('--> SPV Collection account: ', SPVCollectionAccount)
-              console.log('--> Obligor Account: ', obligorAccount)
-              console.log('===============================================')
-              //update blockchain 
-              await murabahaContractInstance.methods.UpdateInstallment(installment.id,mockupStatus[counter],'234',mockupBalances[counter])
-              .send({from:ownerAddress, gas:208408})
-              .then(function(res){
-                installmentId=installmentId+1
-  
-                if(counter==6)
-                  {
-                    counter=0
-                    sukukContractInstance.methods.coupons(couponId).call()
-                      .then(function(coupon){
-                        if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
-                          {
-                            console.log('--> Coupon value: ', SPVCollectionAccount)
-                            console.log('===============================================')
-                            invertorAccount=SPVCollectionAccount+invertorAccount
-                            sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount)
-                            .send({from:ownerAddress, gas:208408})
-                            .then(function(){
-                              SPVCollectionAccount=0
-                              couponId=couponId+1
+              SPVCollectionAccount= SPVCollectionAccount+(monthlyPayment/100)
+              const checkout = new CheckoutAPI(client);
+              
+                checkout.payments({
+                    amount: { currency: "EUR", value: monthlyPayment/100},
+                    paymentMethod: {
+                        type: 'sepadirectdebit',
+                        ownerName: 'A. Grand',
+                        iban: 'FR1420041010050500013M02606'
+                    },
+                    reference: installment.id,
+                    merchantAccount: config.merchantAccount
+                }).then(async function(sepaRes){
+                    console.log('--> Installment Id: ', installmentId)
+                    console.log('===============================================')
+                    // add payment on spv collection account 
+                    AddRecordToSPVCollectionAccount(0,sepaRes.amount.value,sepaRes.pspReference, 'payin')
+                    //update blockchain with success
+                    await murabahaContractInstance.methods.UpdateInstallment(installment.id, sepaRes.resultCode.localeCompare("Authorised"),sepaRes.pspReference,sepaRes.amount.value, "SEPA")
+                    .send({from:ownerAddress, gas:208408})
+                    .then(function(res){
+                        installmentId=installmentId+1
+        
+                        if(counter==6)
+                        {
+                          // Get Coupon value from smart contract 
+                          murabahaContractInstance.methods.GetCouponValue(couponId).call()
+                          .then(function(SPVCollectionAccountBalance){
+                            //payout command   
+                            var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payout/v52/storeDetailAndSubmitThirdParty')
+                            .headers({
+                              'x-API-key': 'AQEphmfuXNWTK0Qc+iSEl3cshueYR55DGcQSCdkB2pddm2UQjN6Cw2pXS+gQwV1bDb7kfNy1WIxIIkxgBw==-rjptUwQ3ILf9Ydhg9b5IrNwR9RHhzQuPRB3oXdFreqE=-Xk}Q945CB.gNbs2<',
+                              'Content-Type': 'application/json',
                             })
-                          }
-                          else
-                          couponId=couponId+1
-                      })
-                  }
-              })
+                            .send(JSON.stringify({"amount":{"currency":"EUR","value":SPVCollectionAccountBalance},"bank":{"countryCode":"NL","ownerName":"S. Hopper","iban":"NL13TEST0123456789"},"shopperName":{"firstName":"Simon","gender":"MALE","lastName":"Hopper"},"nationality":"NL","dateOfBirth":"1982-07-17","entityType":"NaturalPerson","merchantAccount":"TestAccount781ECOM","recurring":{"contract":"PAYOUT"},"reference":"YOUR_REFERENCE","shopperEmail":"s.hopper@company.com","shopperReference":"YOUR_UNIQUE_SHOPPER_ID"}))
+                            .end(function (res) { 
+                              if (res.error) throw new Error(res.error); 
+                             
+                              console.log("SEPA PAYOUT ", JSON.parse(res.raw_body).pspReference);
+
+                              // Blockchain operation 
+                              counter=0
+                              sukukContractInstance.methods.coupons(couponId).call()
+                              .then(function(coupon){
+                                  if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
+                                  {
+                                      console.log('--> Coupon value: ', SPVCollectionAccountBalance)
+                                      console.log('===============================================')
+                                      AddRecordToSPVCollectionAccount(0,(SPVCollectionAccountBalance*-1), JSON.parse(res.raw_body).pspReference, 'payout')
+                                      invertorAccount=SPVCollectionAccount+invertorAccount
+                                      sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123", (SPVCollectionAccountBalance | 0))
+                                      .send({from:ownerAddress, gas:208408})
+                                      .then(function(){                                  
+                                      couponId=couponId+1
+                                      })
+                                  }
+                                  else
+                                  couponId=couponId+1
+                              })
+                            });
+                          })
+                        }
+                    })
+                })
+                .catch(async (err)=>{ // Update blockchain with fail/error 
+                    console.log(err)
+                     //update blockchain with success
+                     await murabahaContractInstance.methods.UpdateInstallment(installment.id,1,err.pspReference,0)
+                     .send({from:ownerAddress, gas:208408})
+                     .then(function(res){
+                         installmentId=installmentId+1
+         
+                         if(counter==6)
+                         {
+                             counter=0
+                             sukukContractInstance.methods.coupons(couponId).call()
+                             .then(function(coupon){
+                                 if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
+                                 {
+                                     console.log('--> Coupon value: ', SPVCollectionAccount)
+                                     console.log('===============================================')
+                                     invertorAccount=SPVCollectionAccount+invertorAccount
+                                     sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount)
+                                     .send({from:ownerAddress, gas:208408})
+                                     .then(function(){
+                                     SPVCollectionAccount=0
+                                     couponId=couponId+1
+                                     })
+                                 }
+                                 else
+                                 couponId=couponId+1
+                             })
+                         }
+                     })
+ 
+                })
+              
               
               }
               else
@@ -671,7 +748,9 @@ function TriggerSchedule()
   }).everyMinute().run()
 }
 
-//******************************* */
+//------------------------------------------------------------------------
+// Get Blockchain Events
+//------------------------------------------------------------------------
 app.get('/api/events', (req,res)=>{
   allEvents =[]
   murabahaContractInstance.getPastEvents('UpdateInstallmentEvent',{fromBlock: 4000,toBlock:'latest'}).then(function(murabahaEvents){
@@ -708,102 +787,185 @@ app.get('/api/events', (req,res)=>{
     }
     res.send(accounts)
   })
+})
+//------------------------------------------------------------------------
+// Refund SEPA transaction 
+//------------------------------------------------------------------------
+app.post('/api/payments/refundOrCancel', (req,res)=>{
+
+    var reference = req.body.reference
+    var value = req.body.value
+    var paymentId =req.body.paymentId
+    var installmentId=req.body.installmentId
+    //WrYfvxnhjF*K<P]2K}334CS{H
 
 
-
-
+    var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payment/V52/cancelOrRefund')
+    .headers({
+        'Authorization': 'Basic d3NAQ29tcGFueS5UZXN0QWNjb3VudDc4MTpXcllmdnhuaGpGKks8UF0yS30zMzRDU3tI',
+        'Content-Type': 'application/json',
+    })
+    .send(JSON.stringify({"merchantAccount":"TestAccount781ECOM","originalReference":reference}))
+    .end( async function (response) { 
+      
+        if (response.error) throw new Error(response.error); 
+        AddRecordToSPVCollectionAccount(0,(-value), JSON.parse(response.raw_body).pspReference, 'Refund')
+        //update blockchain with new status   
+        await murabahaContractInstance.methods.UpdateInstallment(installmentId,2,JSON.parse(response.raw_body).pspReference,(-value),"SEPA")
+                    .send({from:ownerAddress, gas:208408})
+                    .then(function(result){
+                        SPVCollectionAccount= SPVCollectionAccount-value
+                        res.send({'hash': result.transactionHash, "pspReference":JSON.parse(response.raw_body).pspReference, "response":JSON.parse(response.raw_body).response })
+                    })
+  });
 
 })
 
-//**********************************
-//strip operation 
+//------------------------------------------------------------------------
+// Load Data from database
+//------------------------------------------------------------------------
+app.get('/api/load_data', async (req,res)=>{
+  let appData={}
+
+  await db.all('SELECT * FROM counterparts ORDER BY Id DESC LIMIT 1', (err,rows)=>{
+  appData['Id']=rows[0].Id
+  appData['original_seller_name'] = rows[0].original_seller_name
+  appData['original_seller_address'] = rows[0].original_seller_address
+  appData['solo_investor_name'] = rows[0].solo_investor_name
+  appData['solo_investor_address'] = rows[0].solo_investor_address
+  appData['solo_investor_eth_address'] = rows[0].solo_investor_eth_address
+  appData['solo_investor_payment_account_id'] = rows[0].solo_investor_payment_account_id
+  appData['purchaser_name'] = rows[0].purchaser_name
+  appData['purchaser_address'] = rows[0].purchaser_address
+  appData['purchaser_eth_address'] = rows[0].purchaser_eth_address
+  appData['purchaser_payment_account_id'] = rows[0].purchaser_payment_account_id
+  })
+ 
+  //We need to avoid the callback hell
+  await db.all('SELECT name FROM file_uploads WHERE type="titleDead" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+    appData['titleDead']= rows[0].name
+    db.all('SELECT name FROM file_uploads WHERE type="puaContract" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+      appData['puaContract']= rows[0].name
+      db.all('SELECT name FROM file_uploads WHERE type="murabaAgreement" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+        appData['murabaAgreement']= rows[0].name
+        db.all('SELECT name FROM file_uploads WHERE type="sukukCertificate" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+          appData['sukukCertificate']= rows[0].name
+          db.all('SELECT name FROM file_uploads WHERE type="installments" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+            appData['installments']= rows[0].name
+            db.all('SELECT name FROM file_uploads WHERE type="coupons" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+              appData['coupons']= rows[0].name
+              db.all('SELECT name FROM file_uploads WHERE type="cxcKycDocument" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+                appData['cxcKycDocument']= rows[0].name
+                db.all('SELECT name FROM file_uploads WHERE type="spvKycDocument" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+                  appData['spvKycDocument']= rows[0].name
+                  db.all('SELECT name FROM file_uploads WHERE type="puvContract" ORDER BY id DESC LIMIT 1',(err,rows)=>{
+                    appData['puvContract']= rows[0].name
+                    res.json(appData)
+                  })
+                })
+               })
+             })
+          })
+        })
+
+      })
+    })
+  } )
+})
+
+//------------------------------------------------------------------------
+// Verification
+//------------------------------------------------------------------------
+app.get('/api/verification/files', (req,res)=>{
+  db.all('SELECT Distinct type FROM file_uploads', (err,rows)=>{
+  res.json(rows)
+})
+})
+
+app.get('/api/verification/counterparts', (req,res)=>{
+  db.all('SELECT  validation1A,validation1B,validation1C  FROM counterparts ORDER by id DESC LIMIT 1', (err,rows)=>{
+    res.json(rows)
+  })
+}) 
+
+app.post('/api/verification/send2notary', (req,res)=>{
+  db.run("INSERT INTO notary (status) values(?)", 1, (err,rows)=>{
+      if(err){            
+          console.log(err)
+          res.sendStatus(404)
+      }
+      else
+        res.sendStatus(200)
+    })   
+})
+app.get('/api/notary/records', (req,res)=>{
+  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
+    res.json(rows[0])
+    
+  })
+})
+app.post('/api/notary/update', (req,res)=>{
+  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
+    var updatedField = req.body.field
+    let sql = `UPDATE notary SET `+updatedField +` = ?  WHERE id = ?`;
+    db.run(sql,1,rows[0].id, (err,rows)=>{
+      res.sendStatus(200)
+    })
+    
+  })
+})
+
+//------------------------------------------------------------------------
+// SPV Collection Account
+//------------------------------------------------------------------------
+function AddRecordToSPVCollectionAccount(timestamp, value, transactionId,type)
+{
+  //value is positive for payin and negative for payout
+  db.run('INSERT INTO spv_collection_account (timestamp, value, type, transaction_Id) VALUES(?,?,?,?)',
+  timestamp, value, type,transactionId, (err,rows)=>{
+    if (err)
+    console.log(err)
+  }
+  )
+}
+//------------------------------------------------------------------------
+// Deploy smart contracts
+//------------------------------------------------------------------------
+app.post('/api/contracts/deploy/sukuk', async (req,res)=>{ 
+  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  const x = spawn('node', ['deploy_sukuk_smart_contract.js'],options);
+  res.json({
+    'msg': 'Sukuk smart contract sent for deployment! WAIT CONFIRMATION ...'
+  })  
+})
+
+app.post('/api/contracts/deploy/murabaha', async (req,res)=>{ 
+  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc']};
+   const y = spawn('node', ['deploy_murabaha_smart_contract.js'], options);
+  res.json({
+    'msg': 'Murabaha smart contracts is sent for deployment! WAIT CONFIRMATION ...'
+  })  
+})
+
+app.get('/api/contracts/status', (req,res)=>{
+  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err, rows)=>{
+    res.json(rows[0])
+  })
+})
 
 
-async function stripOperation() {
-//   console.log('calling');
-//   stripe.customers.create({
-//     email: 'customer@example.com',
-//   })
-//     .then(customer => console.log(customer.id))
-//     .catch(error => console.error(error));
-// } id = cus_HIhwuni6g2Wt6M
-const intent = await stripe.paymentIntents.create({
-  amount: 1099,
-  currency: 'eur',
-  setup_future_usage: 'off_session',
-  customer: 'cus_HIhwuni6g2Wt6M',
-  payment_method_types: ['sepa_debit'],
-  // Verify your integration in this guide by including this parameter
-  metadata: {integration_check: 'sepa_debit_accept_a_payment'},
+app.post('/api/contracts/reset', (req,res)=>{
+  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
+    db.run('UPDATE notary SET coupon_broadcasted = 0, installment_broadcasted=0,'+
+    'trigger_payment=0, sukuk_smart_contract=0, murabaha_smart_contract=0 WHERE id = ?',
+    rows[0].id, (err, rows)=>{
+      res.sendStatus(200)
+      if(err) console.log(err)
+    })
+  })
+  db.run('UPDATE temp_coupons SET inBlockchain = NULL;')
+  db.run('UPDATE temp_installments SET inBlockchain = NULL;')
 
-})}
-
-
-//stripOperation()
-// Expose a endpoint as a webhook handler for asynchronous events.
-// Configure your webhook in the stripe developer dashboard
-// https://dashboard.stripe.com/test/webhooks
-// app.post("/webhook", async (req, res) => {
-//   let data, eventType;
-
-//   // Check if webhook signing is configured.
-//   if (process.env.STRIPE_WEBHOOK_SECRET) {
-//     // Retrieve the event by verifying the signature using the raw body and secret.
-//     let event;
-//     let signature = req.headers["stripe-signature"];
-//     try {
-//       event = stripe.webhooks.constructEvent(
-//         req.rawBody,
-//         signature,
-//         process.env.STRIPE_WEBHOOK_SECRET
-//       );
-//     } catch (err) {
-//       console.log(`⚠️  Webhook signature verification failed.`);
-//       return res.sendStatus(400);
-//     }
-//     data = event.data;
-//     eventType = event.type;
-//   } else {
-//     // Webhook signing is recommended, but if the secret is not configured in `config.js`,
-//     // we can retrieve the event data directly from the request body.
-//     data = req.body.data;
-//     eventType = req.body.type;
-//   }
-
-//   if (eventType === "payment_intent.succeeded") {
-//     // Funds have been captured
-//     // Fulfill any orders, e-mail receipts, etc
-//     // To cancel the payment you will need to issue a Refund (https://stripe.com/docs/api/refunds)
-//     console.log("💰 Payment received!");
-//   } else if (eventType === "payment_intent.payment_failed") {
-//     console.log("❌ Payment failed.");
-//   }
-//   res.sendStatus(200);
-// });
-
-
-// const client = new Client({ config });
-// client.setEnvironment("TEST");
-
-// const checkout = new CheckoutAPI(client);
-// checkout.payments({
-//     amount: { currency: "EUR", value: 1000 },
-//     paymentMethod: {
-//         type: 'sepadirectdebit',
-//         ownerName: 'A. Schneider',
-//         iban: 'DE87123456781234567890'
-//     },
-//     reference: "YOUR_ORDER_NUMBER",
-//     merchantAccount: config.merchantAccount
-// }).then(function(res){
-//     console.log(res)
-// })
-// .catch((err)=>{
-//     console.log(err)
-//   })
-
-
-
+})
+//------------------------------------------------------------------------
 app.listen(3000, () => console.log('Web app listening at http://localhost:3000'))
-
-

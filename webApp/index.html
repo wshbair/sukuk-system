@@ -5,33 +5,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=0.4">
 	
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Transaction Setup</title>
+    <title>CXC Dashboard | Transaction Setup</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.0/semantic.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
     <link rel="icon" href="images\favicon.png">
-
-    <style>
-     
-   
-    </style>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
-		<div class="ui fixed inverted back medium menu">
-			<div class="ui container">      
-                <a href='index.html' class="item active">1. Transaction Setup</a>
-                <a href='notary.html' class="item">2. Notary DashBoard</a>
-                <a href='sukuk.html' class="item">3. Sukuk Dashboard  </a>
-				<a href='murabaha.html' class="item">4. Murabha Dashboard </a>
-                <a href='monitoring.html' class="item ">5. Monitoring Dashboard</a>
-                <a href='murabaha-manual-collection.html' class="item ">6. Manual Collection</a>    
-			</div>
-		</div>
 		
-	<div class="row">
-		<p><br><br><br></p>
-	</div>
+    <div class="ui three column grid">
+            <div class="three wide column">
+            </div>
+            <div class="ten wide column">
+                <img src="images/logo.png" width="80px" class="ui left tiny image">
+                <div class="ui inverted large menu">  
+                    <a href='/' class="item">Home</a>
+                    <a href='index.html' class="item active">Transaction Setup</a>
+                    <a href='sukuk.html' class="item">Sukuk Dashboard  </a>
+                    <a href='murabaha.html' class="item">Murabha Dashboard </a>
+                    <a href='monitoring.html' class="item ">Monitoring Dashboard</a>
+                    <a href='murabaha-manual-collection.html' class="item ">Manual Collection</a>                              
+                </div>
+            </div>
+    </div>
 	
     <div class="row">
         <div class="ui three column grid">
@@ -47,7 +45,7 @@
                                 <div id="step1" class="step active link" onclick="Next0()">
                                     <div class="content">
                                         <div class="title">Counterparts</div>
-                                        <div class="description">Enter counterparts information</div>
+                                        <div class="description">Counterparts information</div>
                                     </div>
                                 </div>
                                 <div id="step2" class="step link" onclick="Next1()">
@@ -73,8 +71,7 @@
                         <!-- Step 1 -->
                         <div id="step1Content" class="ui attached segment" >
                             <div class="content">
-                                    <br>
-                                    
+                                   
                                         <div class="row ui compact small form">
                                             <h3 class="ui header"><div class="ui teal horizontal label">1.A</div> Original Seller Information<a class="anchor" id="1A"></a></h3>
                                             <div class="ui two column grid">
@@ -86,17 +83,18 @@
                                                                 </div>
                                                             </div>
                                                                 
-                                                            <div class="field" >
-                                                                <div class="ui">
-                                                                    <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> Legal Address </div>
-                                                                        <textarea id="original_seller_address" rows="2" placeholder="Legal Address"></textarea>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            
                                                     </div>
                                                     <div class="eight wide column">
-                                                        <div class="field"  >
+                                                            <div class="field" >
+                                                                    <div class="ui">
+                                                                        <div class="ui labeled input">
+                                                                            <div style="width:30%" class="ui label"> Legal Address </div>
+                                                                            <textarea id="original_seller_address" rows="2" placeholder="Legal Address"></textarea>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                       <!--  <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> ID/Passport </div>
@@ -105,16 +103,10 @@
                                                             </div>
 
                                                             <div id="original_seller_id_msg" class="ui success message">
-                                                                <p>File uploaded successfully!</p>
+                                                                 
                                                             </div>
-                                                        </div>
-                                                        <!-- <div class="ui placeholder segment">
-                                                            <div class="ui icon header">
-                                                                <i class="pdf file outline icon"></i>
-                                                                Upload the Seller ID/Passport
-                                                            </div>
-                                                            <div class="ui primary button">Add Document</div>
                                                         </div> -->
+                                                         
                                                     </div>
                                             </div>
                                         </div>
@@ -145,11 +137,11 @@
                                                                 <div class="ui calendar">
                                                                     <div class="ui labeled input">
                                                                         <div style="width:30%" class="ui label"> Payment Account </div>
-                                                                        <input type="text" id="solo_investor_payment_account" placeholder="Payment Account ">
+                                                                        <input type="text" id="solo_investor_payment_account_id" placeholder="Payment Account ">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <div class="field"  >
+                                                       <!--  <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> ID/Passport </div>
@@ -157,9 +149,9 @@
                                                                 </div>
                                                             </div>
                                                             <div id="solo_investor_id_msg" class="ui success message">
-                                                                <p>File uploaded successfully!</p>
+                                                                
                                                             </div>
-                                                        </div>
+                                                        </div> -->
 
                                                         <div class="field">
                                                                 <div class="ui">
@@ -171,7 +163,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div id="original_seller_id_msg" class="ui success message">
-                                                                    <p>File uploaded successfully!</p>
+                                                                    
                                                                 </div>
                                                             </div>
                                                     </div>
@@ -206,11 +198,11 @@
                                                                 <div class="ui calendar">
                                                                     <div class="ui labeled input">
                                                                         <div style="width:30%" class="ui label"> Payment Account </div>
-                                                                        <input type="text" id="purchaser_payment_account" placeholder="Payment Account ">
+                                                                        <input type="text" id="purchaser_payment_account_id" placeholder="Payment Account ">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <div class="field"  >
+                                                        <!-- <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> ID/Passport </div>
@@ -222,7 +214,7 @@
                                                                 <p>File uploaded successfully!</p>
                                                             </div>
 
-                                                        </div>
+                                                        </div> -->
                                                         <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
@@ -251,40 +243,31 @@
                                         <div class="row ui compact small form">
                                             <h3 class="ui header"><div class="ui orange horizontal label">2.A</div> Title Dead<a class="anchor" id="2A"></a></h3>
 
-                                            <div class="ui two column grid">
-                                                    <div class="eight wide column">
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder1 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                            <input type="text" name="eth_block" placeholder=" PlaceHolder2 ">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                    </div>
-                                                    <div class="eight wide column">
-                                                        <div class="field"  >
-                                                            <div class="ui">
-                                                                <div class="ui labeled input">
-                                                                    <div style="width:30%" class="ui label"> Title dead </div>
-                                                                    <input type="file" id="titleDead" onchange="UploadFile('titleDead')" >
-                                                                </div>
+                                            <div class="ui two column grid"> 
+                                                <div class="eight wide column">
+                                                    <div class="field"  >
+                                                        <div class="ui">
+                                                            <div class="ui labeled input">
+                                                                <div style="width:30%" class="ui label"> Title dead </div>
+                                                                <input type="file" id="titleDead" onchange="UploadFile('titleDead')" >
                                                             </div>
-                                                            <div id="titleDead_msg" class="ui message" style="display: none;" >
-                                                                
+                                                        </div>
+                                                        <div id="titleDead_msg" class="ui message" style="display: none;" >
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="eight wide column">
+                                                    <div class="field">
+                                                        <div class="ui">
+                                                            <div class="ui labeled input">
+                                                                <div class="ui small basic icon buttons">
+                                                                    <a id="titleDeadLink" href="#"><button class="ui button"><i class="download icon"></i> Download</button></a>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="ui divider"></div>
@@ -294,26 +277,7 @@
                                             <h3 class="ui header"><div class="ui orange horizontal label">2.B</div> Unilateral Sale Undertaking (PUV)<a class="anchor" id="2A"></a></h3>
 
                                             <div class="ui two column grid">
-                                                    <div class="eight wide column">
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder1</div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                            <input type="text" name="eth_block" placeholder=" PlaceHolder2 ">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                    </div>
+                                                    
                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                             <div class="ui">
@@ -326,6 +290,18 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <div class="eight wide column">
+                                                        <div class="field">
+                                                            <div class="ui calendar">
+                                                                <div class="ui labeled input">
+                                                                    <div class="ui small basic icon buttons">
+                                                                        <a id="puvContractLink" href="#"><button class="ui button"><i class="download icon"></i> Download</button></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="ui divider"></div>
@@ -335,26 +311,7 @@
                                             <h3 class="ui dividing header"><div class="ui orange horizontal label">2.C</div> Unilateral Purchase Undertaking (PUA)<a class="anchor" id="2C"></a></h3>
                                             
                                             <div class="ui two column grid">
-                                                    <div class="eight wide column">
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder1 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder2 ">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                    </div>
+                                                    
                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                             <div class="ui">
@@ -367,6 +324,17 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="eight wide column">
+                                                        <div class="field">
+                                                            <div class="ui calendar">
+                                                                <div class="ui labeled input">
+                                                                     <div class="ui small basic icon buttons">
+                                                                        <a id="puaContractLink" href="#"><button class="ui button"><i class="download icon"></i> Download</button></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="ui divider"></div>
@@ -376,25 +344,7 @@
                                             <h3 class="ui dividing header"><div class="ui orange horizontal label">2.D</div> SPV KYC Document<a class="anchor" id="2C"></a></h3>
 
                                             <div class="ui two column grid">
-                                                <div class="eight wide column">
-                                                        <div class="field" id="eth_TimeBlockField">
-                                                                <div class="ui calendar">
-                                                                    <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label">  PlaceHolder1 </div>
-                                                                        <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                <div class="ui calendar">
-                                                                    <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                        <input type="text" name="eth_block" placeholder="PlaceHolder2">
-                                                                    </div>
-                                                                </div>
-                                                            </div>    
-                                                    </div>
+                                                
                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                                 <div class="ui">
@@ -407,6 +357,18 @@
                                                                 </div>
                                                             </div>
                                                     </div>
+
+                                                    <div class="eight wide column">
+                                                        <div class="field">
+                                                            <div class="ui calendar">
+                                                                <div class="ui labeled input">
+                                                                     <div class="ui small basic icon buttons">
+                                                                        <a id="spvKycDocumentLink" href="#"><button class="ui button"><i class="download icon"></i> Download</button></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="ui divider"></div>
@@ -417,26 +379,7 @@
                                             <h3 class="ui dividing header"><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Documents<a class="anchor" id="2E"></a></h3>
 
                                             <div class="ui two column grid">
-                                                    <div class="eight wide column">
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label">PlaceHolder1 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder2 ">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                    </div>
+                                                    
                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                             <div class="ui">
@@ -446,6 +389,18 @@
                                                                 </div>
                                                             </div>
                                                             <div id="cxcKycDocument_msg" class="ui message" style="display: none;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="eight wide column">
+                                                        <div class="field">
+                                                            <div class="ui calendar">
+                                                                <div class="ui labeled input">
+                                                                    <div class="ui small basic icon buttons">
+                                                                        <a id="cxcKycDocumentLink" href="#"><button class="ui button"><i class="download icon"></i> Download</button></a>
+                                                                    </div>
+                                                            </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -459,47 +414,38 @@
                                             <h3 class="ui dividing header"><div class="ui orange horizontal label">2.F</div> Sukuk Certificate & Coupons Schedule <a class="anchor" id="2A"></a></h3>
 
                                             <div class="ui two column grid">
-                                                <div class="eight wide column">
-                                                        <div class="field" id="eth_TimeBlockField">
-                                                                <div class="ui calendar">
-                                                                    <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> PlaceHolder1</div>
-                                                                        <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                <div class="ui calendar">
-                                                                    <div class="ui labeled input">
-                                                                        <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                        <input type="text" name="eth_block" placeholder="PPlaceHolder2 ">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                    </div>
+                                               
                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label">  Sukuk Certificate </div>
                                                                     <input type="file" id="sukukCertificate" onchange="UploadFile('sukukCertificate')" >
+                                                                    <div class="ui small basic icon buttons">
+                                                                        <a id="sukukCertificateLink" href="#"><button class="ui button"><i class="download icon"></i></button></a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div id="sukukCertificate_msg" class="ui message" style="display: none;" >
                                                             </div>
                                                         </div>
+                                                        
+                                                     </div>
+                                                     <div class="eight wide column">
                                                         <div class="field"  >
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Coupons Schedule </div>
                                                                     <input type="file" id="coupons" onchange="UploadSchedule('coupons')" accept=".xls,.xlsx" >
-                                                                </div>
+                                                                    <div class="ui small basic icon buttons">
+                                                                        <a id="couponsLink" href="#"><button class="ui button"><i class="download icon"></i></button></a>
+                                                                    </div>
+                                                                 </div>
                                                             </div>
                                                             <div id="coupons_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
-                                                </div>
+                                                    </div>
                                             </div>
                                         </div>
                                         <div class="ui divider"></div>
@@ -508,47 +454,37 @@
                                         <div class="row ui compact small form">
                                             <h3 class="ui  header"><div class="ui orange horizontal label">2.G</div> Murabha Agreement & Installments Schedule<a class="anchor" id="2A"></a></h3>
                                             <div class="ui two column grid">
-                                                    <div class="eight wide column">
-                                                            <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder1 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder1">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                <div class="field" id="eth_TimeBlockField">
-                                                                    <div class="ui calendar">
-                                                                        <div class="ui labeled input">
-                                                                            <div style="width:30%" class="ui label"> PlaceHolder2 </div>
-                                                                            <input type="text" name="eth_block" placeholder="PlaceHolder2 ">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                    </div>
+                                                    
                                                     <div class="eight wide column">
                                                         <div class="field">
                                                             <div class="ui">
                                                                 <div class="ui labeled input">
                                                                     <div style="width:30%" class="ui label"> Murabha Agreement </div>
                                                                     <input type="file" id="murabaAgreement" onchange="UploadFile('murabaAgreement')">
+                                                                    <div class="ui small basic icon buttons">
+                                                                        <a id="murabaAgreementLink" href="#"><button class="ui button"><i class="download icon"></i></button></a>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div id="murabaAgreement_msg" class="ui message" style="display: none;">
                                                             </div>
                                                         </div>
-                                                        <div class="field">
-                                                            <div class="ui">
-                                                                <div class="ui labeled input">
-                                                                    <div style="width:30%" class="ui label"> Installments Schedule </div>
-                                                                    <input type="file" id="installments" onchange="UploadSchedule('installments')"  >
-                                                                </div>
-                                                            </div>
-                                                            <div id="installments_msg" class="ui message" style="display: none;">
-                                                                </div>
-                                                        </div>
+                                                        
+                                                    </div>
+                                                    <div class="eight wide column">
+                                                            <div class="field">
+                                                                    <div class="ui">
+                                                                        <div class="ui labeled input">
+                                                                            <div style="width:30%" class="ui label"> Installments Schedule </div>
+                                                                            <input type="file" id="installments" onchange="UploadSchedule('installments')"  >
+                                                                            <div class="ui small basic icon buttons">
+                                                                                <a id="installmentsLink" href="#"><button class="ui button"><i class="download icon"></i></button></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="installments_msg" class="ui message" style="display: none;">
+                                                                    </div>
+                                                                </div>     
                                                     </div>
                             
                                                 </div>
@@ -575,43 +511,10 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.A</div> ERC20 Token<a class="anchor" id="3A"></a></h3>
                                             <div class="ui form">
-                                                    <!-- <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label>Token name</label>
-                                                            <input type="text" placeholder="Token Name">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Token symbol</label>
-                                                            <input type="text" placeholder="Token Symbol">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                        
-                                                    <!-- <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label> Decimal</label>
-                                                            <input type="text" placeholder="Deceimal">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Total supply</label>
-                                                            <input type="text" placeholder="Total Supply">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                        
                                                     <div class="field">
                                                             <div class="two fields">
-                                                           <!--  <div class="field">
-                                                                <label>Ethereum Blockchain</label>
-                                                                <select>
-                                                                    <option value="">Testnet (Rinkeby)</option>
-                                                                    <option value="1">Mainnet</option>
-                                                                </select>
-                                                            </div> -->
                                                             <div class="field">
-                                                                    <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
+                                                                    <button class="ui gray button" onclick="ViewCode('erc20')" >View Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                         </div>
@@ -624,55 +527,11 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.B</div> Murabaha<a class="anchor" id="3B"></a></h3>
                                             <div class="ui form">
-                                                    <!-- <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label>Contract Id</label>
-                                                            <input type="text" placeholder="Contract Id">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Tenor </label>
-                                                            <input type="text" placeholder="Tenor">
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                        
-                                                    <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label>Issuer</label>
-                                                            <input type="text" placeholder="Issuer">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Profit rate</label>
-                                                            <input type="text" placeholder="Profit Rate">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                                                   <!--  <div class="field">
-                                                        <div class="two fields">
-                                                            <div class="field">
-                                                                <label>Principal </label>
-                                                                <input type="text" placeholder="Principal" >
-                                                            </div>
-                                                        <div class="field">
-                                                            <label>IRR</label>
-                                                            <input type="text" placeholder="IRR">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                        
                                                     <div class="field">
                                                             <div class="two fields">
-                                                           <!--  <div class="field">
-                                                                <label>Payment frequency</label>
-                                                                <select>
-                                                                    <option value="">Semi Annual</option>
-                                                                    <option value="1">Monthly </option>
-                                                                </select>
-                                                            </div> -->
+                                                           
                                                             <div class="field">
-                                                                 <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
+                                                                 <button class="ui gray button" onclick="ViewCode('murabaha')" >View Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                         </div>
@@ -684,55 +543,13 @@
                                         <div class="row">
                                             <h3 class="ui   header"><div class="ui violet horizontal label">3.C</div> Sukuk<a class="anchor" id="3B"></a></h3>
                                             <div class="ui form">
-                                                    <!-- <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label>Contract Id</label>
-                                                            <input type="text" placeholder="Contract Id">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Tenor </label>
-                                                            <input type="text" placeholder="Tenor">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                        
-                                                   <!--  <div class="field">
-                                                        <div class="two fields">
-                                                        <div class="field">
-                                                            <label>Issuer</label>
-                                                            <input type="text" placeholder="Issuer">
-                                                        </div>
-                                                        <div class="field">
-                                                            <label>Profit rate</label>
-                                                            <input type="text" placeholder="Profit Rate">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
-                                                    <!-- <div class="field">
-                                                        <div class="two fields">
-                                                            <div class="field">
-                                                                <label>Principal </label>
-                                                                <input type="text" placeholder="Principal" >
-                                                            </div>
-                                                        <div class="field">
-                                                            <label>IRR</label>
-                                                            <input type="text" placeholder="IRR">
-                                                        </div>
-                                                        </div>
-                                                    </div> -->
+                                                     
                         
                                                     <div class="field">
                                                             <div class="two fields">
-                                                           <!--  <div class="field">
-                                                                <label>Payment Frequency</label>
-                                                                <select>
-                                                                    <option value="">Semi Annual</option>
-                                                                    <option value="1">Monthly </option>
-                                                                </select>
-                                                            </div> -->
+                                                           
                                                             <div class="field">
-                                                                <button class="ui gray button" onclick="AuditCode()" >Audit Smart Contract Code</button>
+                                                                <button class="ui gray button" onclick="ViewCode('sukuk')" >View Smart Contract Code</button>
                                                             </div>
                                                             </div>
                                                     </div>
@@ -765,153 +582,96 @@
                                             <tbody>
                                               
                                             <tr class="info">
-                                                <td><div class="ui teal horizontal label">1.A</div> Original Seller Information</td>
+                                                <td><button class="mini teal ui button" onclick="Next0()"> 1.A </button> Original Seller Information </td>
                                                 <td class="center aligned">
                                                     <i id="A1" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui teal horizontal label">1.B</div> Solo Investor Information</td>
+                                                <td><button class="mini teal ui button" onclick="Next0()"> 1.B </button> Solo Investor Information</td>
                                                 <td class="center aligned">
                                                         <i id="B1" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui teal horizontal label">1.C</div> Murabah Obligor/Purchaser</td>
+                                                <td> <button class="mini teal ui button" onclick="Next0()"> 1.C </button> Murabah Obligor/Purchaser</td>
                                                 <td class="center aligned">
                                                         <i id="C1" class="large icon"></i>
                                                 </td>
                                              </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.A</div> Title Dead</td>
+                                                <td> <button class="mini orange ui button" onclick="Next1()"> 2.A </button> Title Dead</td>
                                                 <td class="center aligned">
                                                         <i id="A2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.B</div> Unilateral Sale Undertaking (PUV)</td>
+                                                <td><button class="mini orange ui button" onclick="Next1()"> 2.B </button> Unilateral Sale Undertaking (PUV)</td>
                                                 <td class="center aligned">
                                                         <i id="B2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.C</div>Unilateral Purchase Undertaking (PUA)</td>
+                                                <td><button class="mini orange ui button" onclick="Next1()"> 2.C </button> Unilateral Purchase Undertaking (PUA)</td>
                                                 <td class="center aligned">
                                                         <i id="C2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.D</div> SPV KYC Documents</td>
+                                                <td><button class="mini orange ui button" onclick="Next1()"> 2.D </button> SPV KYC Documents</td>
                                                 <td class="center aligned">
                                                         <i id="D2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.E</div> CxC Finance KYC Documents</td>
+                                                <td><button class="mini orange ui button" onclick="Next1()"> 2.E </button> CxC Finance KYC Documents</td>
                                                 <td class="center aligned">
                                                         <i id="E2" class="large icon"></i>
                                                 </td>
                                             </tr >
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.F</div>Sukuk Certificate & Coupons Schedule </td>
+                                                <td> <button class="mini orange ui button" onclick="Next1()"> 2.F </button> </div>Sukuk Certificate & Coupons Schedule </td>
                                                 <td class="center aligned">
                                                         <i id="F2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui orange horizontal label">2.G</div> Murabaha Agreement & Installments Schedule</td>
+                                                <td><button class="mini orange ui button" onclick="Next1()"> 2.G </button> Murabaha Agreement & Installments Schedule</td>
                                                 <td class="center aligned">
                                                         <i id="G2" class="large icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui violet horizontal label">3.A</div> ERC20 Token Smart Contract</td>
+                                                <td> <button class="mini violet ui button" onclick="Next2()"> 3.A </button>   ERC20 Token Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui violet horizontal label">3.B</div> Murabaha Smart Contract</td>
+                                                <td><button class="mini violet ui button" onclick="Next2()"> 3.B </button> Murabaha Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
                                             </tr>
                                             <tr class="info">
-                                                <td><div class="ui violet horizontal label">3.C</div> Sukuk Smart Contract</td>
+                                                <td><button class="mini violet ui button" onclick="Next2()"> 3.C </button> Sukuk Smart Contract</td>
                                                 <td class="center aligned">
                                                     <i class="large green checkmark icon"></i>
                                                 </td>
                                                 
                                             </tr>
-                                            
 
-                                                  
-
-                                              
                                             </tbody>
                                     </table>
-
-                                <!--     <div class="ui fluid card">
-                                            <div class="content">
-                                              <div class="header">E-Signature and Submission</div>
-                                            </div>
-                                            <div class="content">
-                                                <div class="container fluid">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <p>Sign in the canvas below and save your signature as an image!</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <canvas id="sig-canvas" width="620" height="160">
-                                                                    Get a better browser, bro.
-                                                                </canvas>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <button class="btn btn-primary" id="sig-submitBtn">Submit Signature</button>
-                                                                <button class="btn btn-default" id="sig-clearBtn">Clear Signature</button>
-                                                            </div>
-                                                        </div>
-                                                        <br/>
-                                                        <div class="row">
-                                                            <div class="ui form">
-                                                                     
-                                                                    <div class="field">
-                                                                        <label>Data URL for your signature will go here!</label>
-                                                                        <textarea id="sig-dataUrl" rows="2"></textarea>
-                                                                    </div>
-                                                                    </div>
-                                                            
-                                                        </div>
-                                                        <br/>
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <img id="sig-image" src="" alt="Your signature will go here!"/>
-                                                            </div>
-                                                        </div>
-                                                </div>
-
-
-    
-                                            </div>
-                                            <div class="extra content">
-                                                    <button class="ui purple button">Submit To Notary</button>
-                                                  </div>
-                                            
-                                    </div> -->
-                                    
-
-
                             </div>
+                            <div class="ui divider"></div>
+
+                            <button class="ui primary right  button" onclick="Prev3()">Pervious Section</button>
+                            <button id="send2notary" class="ui red right  button" onclick="Send2Notary()" disabled>Submit to Notary</button>
+                            <div id="send2notarymsg" class="ui message" style="display: none;"></div>
+
                         </div>
-
-
-
-                       
-                        
+ 
                 </div>
             </div>
         </div>
@@ -925,43 +685,37 @@
 
     <script src="js\aionapp.js?v0.007"> </script>
 	
-
-    <!-- <div id="sign" class="ui modal">
+   <!--  <div id="sign" class="ui modal">
             <i class="close icon"></i>
             <div class="header">
-              Ledger HD Wallet (not connected)
+              Transaction Submission to Notary
             </div>
             <div class="image content">
-                <div class="ui fluid medium image">
-                    <a class="ui red left corner label">
-                        <i class="plug icon"></i>
-                    </a>
-                    <img src="/images/ledger-logo.png">
-                </div>
+                
               <div class="description">
-                <div class="ui header">Plug in the Ledger Wallet to Sign the Transaction</div>
-                <p>We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a> image associated with your registered e-mail address.</p>
-                <p>Is it okay to use this photo?</p>
+                <div class="ui header"> Transaction Submission to Notary </div>
+                <p>Out believe has request not how comfort evident. Up delight cousins we feeling minutes. 
+                     </p>
               </div>
             </div>
             <div class="actions">
               <div class="ui black deny button">
-                Canacel 
+                Cancel 
               </div>
-              <div class="ui positive right labeled icon button disabled">
-                Sign Transaction 
+              <div class="ui positive right labeled icon button">
+                Approve & Send
                 <i class="checkmark icon"></i>
               </div>
             </div>
     </div> -->
 
 
-   <div id="code" class="ui modal">
-        <div class="header">Smart Contract Source Code</div>
+    <div id="murabahaCode" class="ui modal">
+        <div class="header">Murabaha Smart Contract</div>
         <div class="scrolling content">
                 <div class="description">
                 <p>
-                    <script src="https://gist-it.appspot.com/github.com/wshbair/GethTruffleOnMacOS/blob/master/contracts/helloworld.sol"></script>
+                    <script src="https://gist.github.com/wshbair/a60c8a3378857266e02973e842a86cbb.js"></script>
                 </p>
                 </div>
               </div>
@@ -972,6 +726,38 @@
                 </div> 
               </div>
     </div> 
+    <div id="sukukCode" class="ui modal">
+        <div class="header">Sukuk Smart Contract</div>
+        <div class="scrolling content">
+                <div class="description">
+                <p>
+                    <script src="https://gist.github.com/wshbair/30aefd956aba13c4da03f0f34cd12ed3.js"></script>
+                </p>
+                </div>
+              </div>
+              <div class="actions">
+                 <div class="ui primary approve button">
+                  Proceed
+                  <i class="right chevron icon"></i>
+                </div> 
+              </div>
+    </div>
+    <div id="erc20Code" class="ui modal">
+            <div class="header">ERC20 Token Smart Contract</div>
+            <div class="scrolling content">
+                    <div class="description">
+                    <p>
+                        <script src="https://gist.github.com/wshbair/d8c7aa1c34158b599682bdb22102f66b.js"></script>
+                    </p>
+                    </div>
+                  </div>
+                  <div class="actions">
+                     <div class="ui primary approve button">
+                      Proceed
+                      <i class="right chevron icon"></i>
+                    </div> 
+                  </div>
+    </div>
 
 </body>
 </html>

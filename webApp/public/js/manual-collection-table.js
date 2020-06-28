@@ -125,7 +125,7 @@ function showMe(id)
                                 "<td></td>"+
                                 "<td></td>"+
                                 "<td><h4>Total:</h4></td>"+   
-                                "<td><h4>"+total+" &euro;</h4></td>"+
+                                "<td><h4>"+total.toFixed(2)+" &euro;</h4></td>"+
                                 "<td></td>"+
                                 "</tr>" );
                 }
@@ -177,6 +177,8 @@ function AddResolvedPayment()
     var value = $('#value').val()*100
     var status = $('#paymentStatus').val()
     var type = $('#paymentType').val()
+    $('#addPaymentmsg').text('Adding Payment Wait!')
+
 
     if(status==1)
     {
@@ -196,6 +198,7 @@ function AddResolvedPayment()
 		type: 'POST',
 		data: data,
 		success: function (response) {
+          $('#addPaymentmsg').text('')
           $('#addresolvedpaymentdiv').show()
           $('#addresolvedpaymentdiv').addClass('positive')
           $('#addresolvedpaymentmsg').html("- Transaction hash: "+ response.transactionHash +"<br>"+ 

@@ -8,7 +8,7 @@ $( document ).ready(function() {
             type: "GET",
             url: "/api/events",
                 success: function(result){
-                    getAccounts()
+                     
                      
                    //get installments
                    result.forEach(event=>{
@@ -20,7 +20,7 @@ $( document ).ready(function() {
                                 "<td>"+(event.returnValues.id)+"</td>"+
                                 "<td>"+event.blockNumber+"</td>"+
                                 "<td>"+(event.returnValues.value)/100+" &euro;</td>"+
-                                "<td>"+event.transactionHash+"</td>"+
+                                "<td><a target='_blank' href='https://rinkeby.etherscan.io/tx/"+event.transactionHash+"'> View on Ethereum</a></td>"+
                                 "<td>"+getLabel(event.returnValues.status)+"</td>"+
                                 "</tr>" );
                         eventsHash.push(event.transactionHash)
@@ -100,22 +100,4 @@ function timeConverter(UNIX_timestamp){
   }
 
 
-  function getAccounts()
-  {
-    $.ajax({
-		url: '/api/accounts',
-		type: 'GET',
-		success: function (response) {
-            $("#collection").html((response.SPV_collections /100).toFixed(2)+" &euro;")
-            $("#investor").html((response.investor_account/100).toFixed(2) +" &euro;")
-            $("#obligor").html((response.obligor_account/100).toFixed(2)+" &euro;")
-
-			 
-		},
-		error: function(err){
-			console.log(err)
-			
-		}
-	});
-  }
    

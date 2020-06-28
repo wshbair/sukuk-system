@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.4">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Murabaha Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="icon" href="images\favicon.png">
+</head>
+
+<body>
+		 
+	<div class="ui three column grid">
+		<div class="three wide column">
+		</div>
+		<div class="ten wide column">
+			<img src="images/logo.png" width="80px" class="ui left tiny image">
+			<div class="ui inverted large menu">  
+                <a href='/' class="item">Home</a>
+				<a href='notary.html' class="item">Notary Dashboard</a>>                
+ 				<a href='sukuk-notary.html' class="item ">Sukuk Dashboard  </a>
+                <a href='murabaha-notary.html' class="item active">Murabha Dashboard </a>
+                <a href='monitoring_notary.html' class="item ">Monitoring Dashboard</a>
+ 			</div>
+		</div>
+	</div>
+
+	<div class="row">
+
+		<div class="ui three column grid">
+			
+			<div class="three wide column">
+			</div>
+			
+			<div class="ten wide column">	
+				<div class="ui raised segment">
+					<a class="ui purple left big ribbon label"><h4> Scheduled Installments</h4></a>
+					<div id="loadInstallments" class="ui active inline loader"></div>					
+
+					<table id="murabaha-table" class="ui single line small table striped ">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Timestamp</th>
+								<th>Capital</th>
+								<th>Reumn</th>
+								<th>Remb. Capital</th>
+								<th>Monthly Payment</th>
+								<th>Total Collected</th>
+								<th>Overall Status</th>
+								<th>Payments List</th>
+
+							</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+						
+					</table>
+
+				</div>
+			</div>	
+			
+			<div class="three wide column">
+			</div>
+
+		</div>
+	</div>
+	<div id="payments" class="ui modal">
+		<i class="close icon"></i>
+		<div class="header">
+		  Installment Payments List 
+		</div>
+			<div class="content">
+				<div class="container fluid">
+					<div class="row">
+						<div class="col-md-12">
+								<table id="payments-table" class="ui single line small table striped ">
+									<thead>
+										<tr>
+											<th>Id</th>
+											<th>Timestamp</th>
+											<th>Transaction Id</th>
+											<th>Status</th>
+											<th>Type</th>
+											<th>Value</th>
+
+
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			 
+		 <div class="actions">
+		  <div class="ui black deny button">
+			Close 
+		  </div>
+		
+		</div>
+</div> 
+			
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui-calendar/0.0.8/calendar.min.js"></script>
+
+	<script src="js/aionapp.js?v0.007"></script>
+    <script src="js/build-murabaha-table.js"></script>
+	
+
+ 
+</body>
+</html>

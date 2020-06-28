@@ -20,7 +20,7 @@ $( document ).ready(function() {
                             "<td>"+(element.reumn)/100+" &euro;</td>"+
                             "<td>"+(element.rembCapital)/100+" &euro;</td>"+
                             "<td>"+getLabel(element.status)+"</td>"+
-                            "<td>"+element.mongopayTxId+"</td>"+ 
+                            "<td>"+element.TxId+"</td>"+ 
                             "<td>"+(element.value)/100+" &euro;</td>"+    
                             "</tr>" );
                         
