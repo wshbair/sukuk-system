@@ -58,7 +58,6 @@ $( document ).ready(function() {
 					}, 
 					
                     complete: function() {
-                        $('#notaryLoading').removeClass('active')
                         setTimeout(worker, 20000);
                       }        
                    })
