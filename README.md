@@ -1,4 +1,4 @@
-![logo](https://github.com/wshbair/sukuk-system/blob/master/webApp/public/images/logo.png)
+//![logo](https://github.com/wshbair/sukuk-system/blob/master/webApp/public/images/logo.png)
 
 # Sukuk and Murabaha Tokonization
 
