@@ -13,6 +13,7 @@ $( document ).ready(function() {
 					{
 						$('#murabahBtn').prop('disabled',true)
 						$('#msg').html(' Smart contract deployment confirmed')
+						$('#notaryLoading').removeClass('active') 
 					}
 					else
 						$('#murabahBtn').prop('disabled',false)
@@ -20,6 +21,7 @@ $( document ).ready(function() {
 					{
 						$('#sukukBtn').prop('disabled',true)
 						$('#msg').html(' Smart contract deployment confirmed')
+						$('#notaryLoading').removeClass('active') 
 					}
 					else
 						$('#sukukBtn').prop('disabled',false)
@@ -28,6 +30,7 @@ $( document ).ready(function() {
 					{
 						$('#installmentBtn').prop('disabled',true)
 						$('#msg').html('Installments are broadcasted')
+						$('#notaryLoading').removeClass('active') 
 					}
 					else
 						$('#installmentBtn').prop('disabled',false)
@@ -36,6 +39,7 @@ $( document ).ready(function() {
 					{
 						$('#couponBtn').prop('disabled',true)
 						$('#msg').html('Coupons are broadcasted')
+						$('#notaryLoading').removeClass('active') 
 
 					}
 					else
@@ -45,7 +49,7 @@ $( document ).ready(function() {
 					{
 						$('#paymentBtn').prop('disabled',true)
 						$('#msg').html('Payments are triggered')
-
+						$('#notaryLoading').removeClass('active') 
 					}
 					else
 						$('#paymentBtn').prop('disabled',false)
@@ -266,7 +270,6 @@ function BroadcastInstallments()
  			$('#msg').show()
 			$('#msg').html(response.msg)
 			$('#msg').addClass('success')
-            $('#notaryLoading').removeClass('active, success')
             update('installment_installments')
 		},
 		error: function(err){
@@ -291,9 +294,7 @@ function TriggerSchedule()
 			$('#msg').show()
 			$('#msg').html("Payments Schedule is Running ... ")
 			$('#msg').addClass('success')	
-			update('trigger_payment')
-			$('#notaryLoading').removeClass('active')
-			
+			update('trigger_payment')			
 		},
 		error: function(err){
 			console.log(err)
@@ -312,13 +313,12 @@ function DeploySukuk()
         type: "POST",
         url: "/api/contracts/deploy/sukuk",
         success: function(result){
-            $('#notaryLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('success')
 			$('#msg').html(result.msg)         
         },
         error: function(err){
-            $('#notaryLoading').removeClass('active, success') 
+            $('#notaryLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('danger')
 			$('#msg').html("Error")
@@ -339,7 +339,6 @@ function DeployMurabaha()
         type: "POST",
         url: "/api/contracts/deploy/murabaha",
         success: function(result){
-            $('#notaryLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('success')
 			$('#msg').html(result.msg)         
