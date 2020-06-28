@@ -114,4 +114,9 @@ contract CXCSukuk is DateTime {
         }
         return totalCoupons;
     }
+
+    function GetCouponValue(uint256 id) view public returns(int256)
+    {
+        return coupons[id].value;
+    }
 }

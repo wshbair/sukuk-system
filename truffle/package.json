@@ -9,6 +9,7 @@
   "author": "Wazen Shbair",
   "license": "ISC",
   "dependencies": {
-    "truffle": "^5.0.44"
+    "truffle": "^5.0.44",
+    "truffle-hdwallet-provider": "^1.0.17"
   }
 }

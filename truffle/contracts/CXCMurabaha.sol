@@ -14,7 +14,7 @@ contract CXCMurabaha is DateTime {
     uint256 public tenor = 10;
     string public paymentFrequency = 'monthly';
     string public profitRate;
-    uint256 public principal;
+    uint256 public principal; 
 
     address public SPVAddr;
     address public obligorAddr;
@@ -205,5 +205,19 @@ contract CXCMurabaha is DateTime {
             totalPayments = totalPayments.add(installments[_installmentId].Payments[i].value);
         }
         return totalPayments;
+    }
+
+    function GetCouponValue(uint256 couponId) view public returns (int256)
+    {
+        uint256 from = (couponId*6) - 5;
+        uint256 to = (couponId*6);
+        int256 couponValue = 0;
+
+        for(uint256 i = from; i<=to; i++)
+        {
+            couponValue = couponValue + GetPaymentsTotal(i);
+        }
+
+        return couponValue;
     }
 }
