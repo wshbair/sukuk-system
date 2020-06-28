@@ -58,10 +58,10 @@
                                         
                                         <td class="left aligned">
                                             <button id="ShowButton" class="tiny primary ui  button" onclick="view()"> Show/Hide Application </button><br><br>
-                                            <button id="sukukBtn" class="tiny primary ui button" onclick="DeploySukuk()"> (1) Deploy SUKUK contract </button><br><br>
-                                            <button id="murabahBtn" class="tiny primary ui  button" onclick="DeployMurabaha()"> (2) Deploy MURABAHA contract </button><br><br>
-                                            <button id="couponBtn" class="tiny primary ui  button" onclick="BroadcastCoupons()"> (3) Broadcast Coupons </button><br><br>
-                                            <button id="installmentBtn" class="tiny primary  ui button" onclick="BroadcastInstallments()"> (4) Broadcast Installments </button><br><br>
+                                            <button id="sukukBtn" class="tiny primary ui button" onclick="DeploySukuk()"> (1) Deploy SUKUK contract </button><div id="sukukLoading" class="ui tiny inline loader"></div>	 <br><br>
+                                            <button id="murabahBtn" class="tiny primary ui  button" onclick="DeployMurabaha()"> (2) Deploy MURABAHA contract </button><div id="murabahaLoading" class="ui tiny inline loader"></div> <br><br>
+                                            <button id="couponBtn" class="tiny primary ui  button" onclick="BroadcastCoupons()"> (3) Broadcast Coupons </button><div id="couponLoading" class="ui tiny inline loader"></div><br><br>
+                                            <button id="installmentBtn" class="tiny primary  ui button" onclick="BroadcastInstallments()"> (4) Broadcast Installments </button><div id="installmentLoading" class="ui tiny inline loader"></div><br><br>
                                             <button id="paymentBtn" class="tiny primary  ui button" onclick="TriggerSchedule()"> (5) Trigger Payments </button><br><br>
                                             <button id="paymentBtn" class="tiny red  ui button" onclick="ResetAll()"> Reset All </button>
 

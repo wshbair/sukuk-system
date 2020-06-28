@@ -3,7 +3,6 @@ $( document ).ready(function() {
     
 	(function worker() {
 		$('#notaryLoading').addClass('active')
-				
         $.ajax({
             type: "GET",
             url: "/api/notary/records",
@@ -13,7 +12,7 @@ $( document ).ready(function() {
 					{
 						$('#murabahBtn').prop('disabled',true)
 						$('#msg').html(' Smart contract deployment confirmed')
-						$('#notaryLoading').removeClass('active') 
+						$('#murabahaLoading').removeClass('active') 
 					}
 					else
 						$('#murabahBtn').prop('disabled',false)
@@ -21,7 +20,7 @@ $( document ).ready(function() {
 					{
 						$('#sukukBtn').prop('disabled',true)
 						$('#msg').html(' Smart contract deployment confirmed')
-						$('#notaryLoading').removeClass('active') 
+						$('#sukukLoading').removeClass('active') 
 					}
 					else
 						$('#sukukBtn').prop('disabled',false)
@@ -30,7 +29,7 @@ $( document ).ready(function() {
 					{
 						$('#installmentBtn').prop('disabled',true)
 						$('#msg').html('Installments are broadcasted')
-						$('#notaryLoading').removeClass('active') 
+						$('#installmentLoading').removeClass('active') 
 					}
 					else
 						$('#installmentBtn').prop('disabled',false)
@@ -39,7 +38,7 @@ $( document ).ready(function() {
 					{
 						$('#couponBtn').prop('disabled',true)
 						$('#msg').html('Coupons are broadcasted')
-						$('#notaryLoading').removeClass('active') 
+						$('#couponLoading').removeClass('active') 
 
 					}
 					else
@@ -58,6 +57,7 @@ $( document ).ready(function() {
 					}, 
 					
                     complete: function() {
+						$('#notaryLoading').removeClass('active')
                         setTimeout(worker, 20000);
                       }        
                    })
@@ -236,7 +236,7 @@ function ViewCode(code)
 async function BroadcastCoupons(e)
 {
   $('#msg').html("")   
-  $('#notaryLoading').addClass('active')
+  $('#couponLoading').addClass('active')
   await $.ajax({
 		url: '/api/broadcast_coupons_schedule',
 		type: 'POST',
@@ -249,7 +249,7 @@ async function BroadcastCoupons(e)
 		},
 		error: function(err){
 			console.log(err)	
-			$('#notaryLoading').removeClass('active')
+			$('#couponLoading').removeClass('active')
 
 		}
 	});
@@ -260,7 +260,7 @@ async function BroadcastCoupons(e)
 function BroadcastInstallments()
 {
 	$('#msg').html("")   
- 	$('#notaryLoading').addClass('active')
+ 	$('#installmentLoading').addClass('active')
 	$.ajax({
 		url: '/api/broadcast_installments_schedule',
 		type: 'POST',
@@ -306,7 +306,7 @@ function DeploySukuk()
 {
 	$('#msg').html("")  
 	$('#msg').removeClass('success')
-    $('#notaryLoading').addClass('active')
+    $('#sukukLoading').addClass('active')
     $.ajax({
         type: "POST",
         url: "/api/contracts/deploy/sukuk",
@@ -316,7 +316,7 @@ function DeploySukuk()
 			$('#msg').html(result.msg)         
         },
         error: function(err){
-            $('#notaryLoading').removeClass('active') 
+            $('#sukukLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('danger')
 			$('#msg').html("Error")
@@ -332,7 +332,7 @@ function DeployMurabaha()
 {
 	$('#msg').html("")
 	$('#msg').removeClass('success')
-    $('#notaryLoading').addClass('active')
+    $('#murabahaLoading').addClass('active')
     $.ajax({
         type: "POST",
         url: "/api/contracts/deploy/murabaha",
@@ -342,7 +342,7 @@ function DeployMurabaha()
 			$('#msg').html(result.msg)         
         },
         error: function(err){
-            $('#notaryLoading').removeClass('active, success') 
+            $('#murabahaLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('danger')
 			$('#msg').html("Error")
@@ -363,7 +363,7 @@ function ResetAll()
         success: function(result){
             $('#msg').show()
             $('#msg').addClass('success')
-			$('#msg').html("Reset Success! WAIT ...")   
+			$('#msg').html("Reset order registered!")   
 			loadData()      
         },
         error: function(err){
