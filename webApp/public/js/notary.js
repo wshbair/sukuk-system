@@ -245,7 +245,6 @@ async function BroadcastCoupons(e)
  			$('#msg').show()
 			$('#msg').html(response.msg)
 			$('#msg').addClass('success')
-            $('#notaryLoading').removeClass('active')
             update('coupon_broadcasted')
 		},
 		error: function(err){
