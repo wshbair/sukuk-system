@@ -363,7 +363,6 @@ function ResetAll()
         type: "POST",
         url: "/api/contracts/reset",
         success: function(result){
-            $('#notaryLoading').removeClass('active') 
             $('#msg').show()
             $('#msg').addClass('success')
 			$('#msg').html("Reset Success! WAIT ...")   
