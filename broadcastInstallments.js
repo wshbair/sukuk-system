@@ -45,7 +45,7 @@ db.all('SELECT * FROM temp_installments WHERE inBlockchain IS NULL', (err,rows)=
     {
       console.log('Number of installments ', rows.length)
     const forLoop = async _ => {
-      for (let index = 0; index < rows.length; index++) {
+      for (let index = 0; index < 10; index++) {
         console.log("installment Id: ", rows[index].Id)
         timestamp = rows[index].Date
         capital = parseInt(rows[index].Capital)
