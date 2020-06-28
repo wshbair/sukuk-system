@@ -4,6 +4,8 @@
 
 One Paragraph of project description goes here
 
+![Home page](https://github.com/wshbair/sukuk-system/blob/master/7D7FD6BA-3E55-406B-9086-87A385B369CD.jpeg)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
