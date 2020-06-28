@@ -12,12 +12,14 @@ $( document ).ready(function() {
 					if(parseInt(result.murabaha_smart_contract)==1)
 					{
 						$('#murabahBtn').prop('disabled',true)
+						$('#msg').html(' Smart contract deployment confirmed')
 					}
 					else
 						$('#murabahBtn').prop('disabled',false)
 					if(parseInt(result.sukuk_smart_contract)==1)
 					{
 						$('#sukukBtn').prop('disabled',true)
+						$('#msg').html(' Smart contract deployment confirmed')
 					}
 					else
 						$('#sukukBtn').prop('disabled',false)
@@ -25,6 +27,7 @@ $( document ).ready(function() {
 					if(result.installment_broadcasted==1)
 					{
 						$('#installmentBtn').prop('disabled',true)
+						$('#msg').html('Installments are broadcasted')
 					}
 					else
 						$('#installmentBtn').prop('disabled',false)
@@ -32,6 +35,8 @@ $( document ).ready(function() {
 					if(result.coupon_broadcasted==1)
 					{
 						$('#couponBtn').prop('disabled',true)
+						$('#msg').html('Coupons are broadcasted')
+
 					}
 					else
 						$('#couponBtn').prop('disabled',false)					
@@ -39,6 +44,8 @@ $( document ).ready(function() {
 					if(result.trigger_payment==1)
 					{
 						$('#paymentBtn').prop('disabled',true)
+						$('#msg').html('Payments are triggered')
+
 					}
 					else
 						$('#paymentBtn').prop('disabled',false)

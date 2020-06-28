@@ -40,6 +40,8 @@
                         <a class="ui purple left big ribbon label"><h4> Transaction Setup </h4></a>
                         <div id="transactionSetup" class="ui inline loader"></div>										
                         <br><br>
+                        <div id="SaveStep1_msg" class="ui message" style="display: none;"></div>
+
                         <div class="ui ordered top attached steps">
 
                                 <div id="step1" class="step active link" onclick="Next0()">
@@ -233,8 +235,6 @@
                                 <div class="ui divider"></div>
                                 <button class="ui positive floated button" onclick="SaveStep1()">Save</button>
                                 <button class="ui primary  floated button" onclick="Next1()">Next Section</button>
-                                <div id="SaveStep1_msg" class="ui message" style="display: none;">
-                                </div>
                          </div>
                         <!-- Step 2 -->
                         <div id="step2Content" class="ui attached segment" style="display: none;">

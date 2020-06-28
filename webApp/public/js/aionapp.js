@@ -84,6 +84,8 @@ function Next1()
 	$('#step2').addClass('active');
 	$('#step3').removeClass('active');
 	$('#step4').removeClass('active');
+	$('#SaveStep1_msg').html('')
+	$('#SaveStep1_msg').hide()
 
 
 	$('#step1Content').hide();
@@ -102,6 +104,10 @@ function Next2()
 	$('#step2').removeClass('active');
 	$('#step3').addClass('active');
 	$('#step4').removeClass('active');
+	$('#SaveStep1_msg').html('')
+	$('#SaveStep1_msg').hide()
+
+
 
 
 	$('#step1Content').hide();
@@ -118,6 +124,8 @@ function Prev2()
 	$('#step1').addClass('active');
 	$('#step3').removeClass('active');
 	$('#step4').removeClass('active');
+	$('#SaveStep1_msg').html('')
+	$('#SaveStep1_msg').hide()
 
 
 	$('#step1Content').show();
@@ -136,6 +144,8 @@ function Next3()
 	$('#step2').removeClass('active');
 	$('#step3').removeClass('active');
 	$('#step4').addClass('active');
+	$('#SaveStep1_msg').html('')
+	$('#SaveStep1_msg').hide()
 
 	$('#step1Content').hide();
 	$('#step2Content').hide();
@@ -152,6 +162,8 @@ function Prev3()
 	$('#step2').addClass('active');
 	$('#step1').removeClass('active');
 	$('#step4').removeClass('active');
+	$('#SaveStep1_msg').html('')
+	$('#SaveStep1_msg').hide()
 
 
 
@@ -462,9 +474,9 @@ async function SaveStep2()
 		msg= msg + JSON.stringify(element) +"<br>"
 		
 	});
-	$('#SaveStep2_msg').show()
-	$('#SaveStep2_msg').addClass('success')
-	$('#SaveStep2_msg').html(msg)
+	$('#SaveStep1_msg').show()
+	$('#SaveStep1_msg').addClass('success')
+	$('#SaveStep1_msg').html(msg)
 	$('#transactionSetup').removeClass('active')
 }
 //--------------------------------------------------------
@@ -682,16 +694,16 @@ function Send2Notary()
 			success: async function(result){
 				console.log(result[0])
 				$('#transactionSetup').removeClass('active')
-				$('#send2notarymsg').addClass('green')
-				$('#send2notarymsg').html('Request sent to Notary')
-				$('#send2notarymsg').show()
+				$('#SaveStep1_msg').addClass('success')
+				$('#SaveStep1_msg').html('Request sent to Notary')
+				$('#SaveStep1_msg').show()
 
 		},
 		error: function(err){
 			$('#transactionSetup').removeClass('active')
-			$('#send2notarymsg').addClass('red')
-			$('#send2notarymsg').html('Error')
-			$('#send2notarymsg').show()
+			$('#SaveStep1_msg').addClass('red')
+			$('#SaveStep1_msg').html('Error')
+			$('#SaveStep1_msg').show()
 
 		}
 	});
