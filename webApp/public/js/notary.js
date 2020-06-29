@@ -284,14 +284,14 @@ function TriggerSchedule()
 {
 	$('#msg').html("")   
 	$('#msg').removeClass('success')
-	$('#notaryLoading').addClass('active')
-	$.ajax({
+	$('#msg').hide()
+ 	$.ajax({
 		url: '/api/trigger_schedule',
 		type: 'POST',
 		success: function (response) {
-			$('#msg').show()
-			$('#msg').html("Payments Schedule is Running ... ")
-			$('#msg').addClass('success')	
+			$('#paymentTriggerMsg').show()
+			$('#paymentTriggerMsg').html("Payments Schedule is Running ... ")
+			$('#paymentTriggerMsg').addClass('success')	
 			update('trigger_payment')			
 		},
 		error: function(err){

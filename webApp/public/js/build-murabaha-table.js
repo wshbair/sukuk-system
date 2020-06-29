@@ -104,7 +104,7 @@ function showMe(id)
                                 "<td></td>"+
                                 "<td></td>"+
                                 "<td><h4>Total:</h4></td>"+   
-                                "<td><h4>"+total+" &euro;</h4></td>"+
+                                "<td><h4>"+total.toFixed(2)+" &euro;</h4></td>"+
                                 "</tr>" );
                 }
             
