@@ -119,4 +119,21 @@ contract CXCSukuk is DateTime {
     {
         return coupons[id].value;
     }
+
+
+    function GetNextCouponId() view public returns(uint256)
+    {
+        uint256 nextCoupon = 0;
+
+        for(uint256 i = 1; i <= NumberOfCoupons; i++)
+        {
+           if (keccak256(bytes(coupons[i].status)) == keccak256(bytes("Pending"))) //get the first occurance of Pending
+           {
+               nextCoupon = i;
+               break;
+           }
+        }
+        return nextCoupon;
+    }
+
 }

@@ -14,7 +14,7 @@ contract CXCMurabaha is DateTime {
     uint256 public tenor = 10;
     string public paymentFrequency = 'monthly';
     string public profitRate;
-    uint256 public principal; 
+    uint256 public principal;
 
     address public SPVAddr;
     address public obligorAddr;
@@ -43,7 +43,7 @@ contract CXCMurabaha is DateTime {
         int256 capital; //outstanding
         int256 reumn; // profit
         int256 rembCapital; //principal payment
-        string  overallstatus;
+        string overallstatus;
         uint256 paymentsLength;
         int256 totalCollected;
         mapping(uint256 => Payment) Payments;
@@ -219,5 +219,19 @@ contract CXCMurabaha is DateTime {
         }
 
         return couponValue;
+    }
+
+    function GetNextInstallment() view public returns(uint256, int256, int256)
+    {
+        uint256 nextInstallment = 0;
+
+        for(uint256 i = 1; i <= NumberOfInstallments; i++)
+        {
+           if (keccak256(bytes(installments[i].overallstatus)) == keccak256(bytes("Pending"))) //get the first occurance of pendding
+           {nextInstallment = i;
+           break;
+           }
+        }
+        return (installments[nextInstallment].id,installments[nextInstallment].reumn, installments[nextInstallment].rembCapital);
     }
 }
