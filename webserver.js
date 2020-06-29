@@ -623,11 +623,22 @@ app.post('/api/broadcast_installments_schedule', (req,res)=>{
 // Trigger the Payment Schedule  
 //------------------------------------------------------------------------
 app.post('/api/trigger_schedule',(req,res)=>{
-  TriggerSchedule()
-  res.sendStatus(200)
+
+  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  child = spawn('node', ['trigger_payment.js'], options);
+  child.on('message', (data) => {
+      console.log(data);
+      child.unref();
+      process.exit(0);
+  });
+
+  res.json({
+    'msg': 'Payment trigger is fired ..'
+  })  
+   
 })
 
-function TriggerSchedule()
+/* function TriggerSchedule()
 {
   const client = new Client({ config });
   client.setEnvironment("TEST");
@@ -746,7 +757,8 @@ function TriggerSchedule()
             })
             
   }).everyMinute().run()
-}
+  
+} */
 
 //------------------------------------------------------------------------
 // Get Blockchain Events
@@ -927,6 +939,13 @@ function AddRecordToSPVCollectionAccount(timestamp, value, transactionId,type)
     console.log(err)
   }
   )
+}
+
+async function GetSPVCollectionBalance()
+{
+  await db.all('select sum(value) from spv_collection_account', (err,rows)=>{
+    return rows[0].value
+  })
 }
 //------------------------------------------------------------------------
 // Deploy smart contracts
