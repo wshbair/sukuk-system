@@ -11,7 +11,7 @@ const fs = require('fs');
 
 const HDWalletProvider = require("truffle-hdwallet-provider");
 var provider = new HDWalletProvider('885dd679ff168a152d7492bcfb85cf5d4cc6312d7f329442168f5b18c00e5f31', "https://rinkeby.infura.io/v3/cedb2f80c0cd4a3c99a668222fe86a49")
-
+var ownerAddress="0x9fc3d36C008ACDb4f1Aa15046850050478a988A1" 
 const options = {
     defaultAccount: '0x9fc3d36C008ACDb4f1Aa15046850050478a988A1',
     defaultBlock: 'latest',
@@ -31,20 +31,6 @@ let db = new sqlite3.Database('main.db', (err) => {
       console.error(err.message);
     }
    });
-
-//--------------------------------------------------------------
-// Smart contracts configuration 
-//--------------------------------------------------------------
-//var cxcMurabaha = require("./truffle/contracts/CXCMurabaha.json");
-//var murabahaContractAddr= require("./murabaha_contract_address.json").address
-//var murabahaContractInstance= new web3.eth.Contract(cxcMurabaha.abi,murabahaContractAddr);
-//var cxcSukuk = require("./truffle/contracts/CXCSukuk.json");
-
-//var sukukContractAddr= require("./sukuk_contract_address.json").address
-//var sukukContractInstance= new web3.eth.Contract(cxcSukuk.abi,sukukContractAddr);
-
-var ownerAddress="0x9fc3d36C008ACDb4f1Aa15046850050478a988A1" 
-
 //--------------------------------------------------------------
 //  Deployer Module
 //--------------------------------------------------------------
