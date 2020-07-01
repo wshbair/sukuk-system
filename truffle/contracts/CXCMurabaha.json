@@ -24568,12 +24568,13 @@
         }
       },
       "links": {},
-      "address": "0xd039E3944e0dC88B4846cC5Ab63E66ACf871f3e1",
-      "transactionHash": "0x0340368592242fbd4a8793e1cda3e0c9eaffac97c4ded2191d0afc60bcdea992"
+      "address": "0x791dc09EaAa2A8afEf9FB46CD53fbdAAeEc0A10a",
+      "transactionHash": "0x19c440622f6e0226181de2ceb023edb980c8fd7987445cf4510fb2fc00447d73"
     }
   },
   "schemaVersion": "3.0.18",
-  "updatedAt": "2020-06-28T19:48:17.183Z",
+  "updatedAt": "2020-06-30T19:28:20.816Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
