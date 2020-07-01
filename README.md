@@ -3,7 +3,7 @@
 
 One Paragraph of project description goes here
 
-![Home page](https://github.com/wshbair/sukuk-system/blob/master/7D7FD6BA-3E55-406B-9086-87A385B369CD.jpeg)
+![Home page](https://github.com/wshbair/sukuk-system/blob/master/home.jpeg)
 
 ## Getting Started
 
