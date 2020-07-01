@@ -363,7 +363,7 @@ function ResetAll()
         success: function(result){
             $('#msg').show()
             $('#msg').addClass('success')
-			$('#msg').html("Reset order registered!")   
+			$('#msg').html("Reset order is registered!")   
 			loadData()      
         },
         error: function(err){

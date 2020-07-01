@@ -707,4 +707,13 @@ function Send2Notary()
 
 		}
 	});
+
+	$.ajax({
+        type: "POST",
+        url: "/api/contracts/reset",
+        success: function(result){     
+        },
+        error: function(err){
+        }
+    });
 }

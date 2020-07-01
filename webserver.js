@@ -7,15 +7,15 @@ var cors = require('cors')
 var bodyParser = require('body-parser')
 const Web3 = require('web3')
 const crypto = require('crypto');
-const reel = require('node-reel')
 var compression = require('compression')
 var unirest = require('unirest');
 var sha1 = require('sha1');
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 const {spawn } = require('child_process');
-const broadcaster = require('./broadcaster')
+const broadcaster = require('./broadcaster');
+const deployer = require('./deployer');
+
 
 const options = {
   defaultAccount: '0x9fc3d36C008ACDb4f1Aa15046850050478a988A1',
@@ -41,9 +41,6 @@ config.merchantAccount = 'TestAccount781ECOM';
 var SPVCollectionAccount=0
 var invertorAccount=0
 var obligorAccount=30000000
-var installmentId=1
-var couponId=1
-var counter=0
 
 global.__basedir = __dirname;
 const web3 = new Web3(provider,null, options);
@@ -473,18 +470,10 @@ app.get('/api/sukuk/overview/investorAddress', function(req,res){
 })
 
 //--------------------------------------------------------------
-// Platform operation
+// Get Ethereum Address
 //--------------------------------------------------------------
 app.get('/api/ethereum/address', function(req,res){
-  // const EthWallet = Wallet
-  // console.log("address: " + EthWallet.getAddressString());
-  // console.log("privateKey: " + EthWallet.getPrivateKeyString());
   res.json('0x'+sha1('!@superpassword'+ Math.random()))
-  
-  // web3.eth.personal.newAccount()
-  // .then(function(result){
-  //   res.json(result)
-  // });
 })
 //------------------------------------------------------------------------
 // Add Counterpart
@@ -584,17 +573,8 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
 //------------------------------------------------------------------------
 // Broadcast coupons schedule in blockchain
 //------------------------------------------------------------------------
-// we need to resume from where it stopped
-app.post('/api/broadcast_coupons_schedule', async (req,res)=>{
-  // const options = {silent:false,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  // child = spawn('node', ['broadcastCoupon.js'], options);
-  // child.on('message', (data) => {
-  //     console.log(data);
-  //     child.unref();
-  //     process.exit(0);
-  // });
+app.post('/api/broadcast_coupons_schedule', async (req,res)=>{ 
   broadcaster.broadcastCoupon()
-
   res.json({
     'msg': 'Coupons are sent! WAIT CONFIRMATION ...'
   })  
@@ -605,14 +585,6 @@ app.post('/api/broadcast_coupons_schedule', async (req,res)=>{
 //------------------------------------------------------------------------
 app.post('/api/broadcast_installments_schedule', (req,res)=>{
   broadcaster.broadcastInstallments()
-  // const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  // child = spawn('node', ['broadcastInstallments.js'], options);
-  // child.on('message', (data) => {
-  //     console.log(data);
-  //     child.unref();
-  //     process.exit(0);
-  // });
-
   res.json({
     'msg': 'Installments are sent! WAIT CONFIRMATION ...'
   })  
@@ -622,142 +594,24 @@ app.post('/api/broadcast_installments_schedule', (req,res)=>{
 // Trigger the Payment Schedule  
 //------------------------------------------------------------------------
 app.post('/api/trigger_schedule',(req,res)=>{
-
-  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  child = spawn('node', ['trigger_payment.js'], options);
-  child.on('message', (data) => {
-      console.log(data);
-      child.unref();
-      process.exit(0);
-  });
-
-  res.json({
-    'msg': 'Payment trigger is fired ..'
-  })  
-   
+  try {
+    // Call the schedular API 
+    var req = unirest('POST', 'http://localhost:4000/api/schedules/start')
+    .end(function (res) { 
+      if (res.error)
+      console.log("Error in trigger schedule")
+      else
+      {
+        res.json({
+          'msg': 'Payment trigger is fired ..'
+        })  
+      }
+    });  
+    
+  } catch (error) {
+    console.log(error)
+  }
 })
-
-/* function TriggerSchedule()
-{
-  const client = new Client({ config });
-  client.setEnvironment("TEST");
-
-  reel().call(() => {
-    console.log("::> Running a task every 1 minute");
-    murabahaContractInstance.methods.installments(installmentId).call()
-            .then(async function(installment){
-              if(installment.id !=0 && installment.overallstatus.localeCompare("Pending") ==0)
-              {
-              counter=counter+1
-              console.log("Counter: ", counter)  
-              var monthlyPayment= parseInt(installment.reumn)+ parseInt(installment.rembCapital)
-              SPVCollectionAccount= SPVCollectionAccount+(monthlyPayment/100)
-              const checkout = new CheckoutAPI(client);
-              
-                checkout.payments({
-                    amount: { currency: "EUR", value: monthlyPayment/100},
-                    paymentMethod: {
-                        type: 'sepadirectdebit',
-                        ownerName: 'A. Grand',
-                        iban: 'FR1420041010050500013M02606'
-                    },
-                    reference: installment.id,
-                    merchantAccount: config.merchantAccount
-                }).then(async function(sepaRes){
-                    console.log('--> Installment Id: ', installmentId)
-                    console.log('===============================================')
-                    // add payment on spv collection account 
-                    AddRecordToSPVCollectionAccount(0,sepaRes.amount.value,sepaRes.pspReference, 'payin')
-                    //update blockchain with success
-                    await murabahaContractInstance.methods.UpdateInstallment(installment.id, sepaRes.resultCode.localeCompare("Authorised"),sepaRes.pspReference,sepaRes.amount.value, "SEPA")
-                    .send({from:ownerAddress, gas:208408})
-                    .then(function(res){
-                        installmentId=installmentId+1
-        
-                        if(counter==6)
-                        {
-                          // Get Coupon value from smart contract 
-                          murabahaContractInstance.methods.GetCouponValue(couponId).call()
-                          .then(function(SPVCollectionAccountBalance){
-                            //payout command   
-                            var req = unirest('POST', 'https://pal-test.adyen.com/pal/servlet/Payout/v52/storeDetailAndSubmitThirdParty')
-                            .headers({
-                              'x-API-key': 'AQEphmfuXNWTK0Qc+iSEl3cshueYR55DGcQSCdkB2pddm2UQjN6Cw2pXS+gQwV1bDb7kfNy1WIxIIkxgBw==-rjptUwQ3ILf9Ydhg9b5IrNwR9RHhzQuPRB3oXdFreqE=-Xk}Q945CB.gNbs2<',
-                              'Content-Type': 'application/json',
-                            })
-                            .send(JSON.stringify({"amount":{"currency":"EUR","value":SPVCollectionAccountBalance},"bank":{"countryCode":"NL","ownerName":"S. Hopper","iban":"NL13TEST0123456789"},"shopperName":{"firstName":"Simon","gender":"MALE","lastName":"Hopper"},"nationality":"NL","dateOfBirth":"1982-07-17","entityType":"NaturalPerson","merchantAccount":"TestAccount781ECOM","recurring":{"contract":"PAYOUT"},"reference":"YOUR_REFERENCE","shopperEmail":"s.hopper@company.com","shopperReference":"YOUR_UNIQUE_SHOPPER_ID"}))
-                            .end(function (res) { 
-                              if (res.error) throw new Error(res.error); 
-                             
-                              console.log("SEPA PAYOUT ", JSON.parse(res.raw_body).pspReference);
-
-                              // Blockchain operation 
-                              counter=0
-                              sukukContractInstance.methods.coupons(couponId).call()
-                              .then(function(coupon){
-                                  if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
-                                  {
-                                      console.log('--> Coupon value: ', SPVCollectionAccountBalance)
-                                      console.log('===============================================')
-                                      AddRecordToSPVCollectionAccount(0,(SPVCollectionAccountBalance*-1), JSON.parse(res.raw_body).pspReference, 'payout')
-                                      invertorAccount=SPVCollectionAccount+invertorAccount
-                                      sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123", (SPVCollectionAccountBalance | 0))
-                                      .send({from:ownerAddress, gas:208408})
-                                      .then(function(){                                  
-                                      couponId=couponId+1
-                                      })
-                                  }
-                                  else
-                                  couponId=couponId+1
-                              })
-                            });
-                          })
-                        }
-                    })
-                })
-                .catch(async (err)=>{ // Update blockchain with fail/error 
-                    console.log(err)
-                     //update blockchain with success
-                     await murabahaContractInstance.methods.UpdateInstallment(installment.id,1,err.pspReference,0)
-                     .send({from:ownerAddress, gas:208408})
-                     .then(function(res){
-                         installmentId=installmentId+1
-         
-                         if(counter==6)
-                         {
-                             counter=0
-                             sukukContractInstance.methods.coupons(couponId).call()
-                             .then(function(coupon){
-                                 if(coupon.id != 0 && coupon.status.localeCompare("Success")!=0)
-                                 {
-                                     console.log('--> Coupon value: ', SPVCollectionAccount)
-                                     console.log('===============================================')
-                                     invertorAccount=SPVCollectionAccount+invertorAccount
-                                     sukukContractInstance.methods.UpdateCoupon(coupon.id,"Success","123",SPVCollectionAccount)
-                                     .send({from:ownerAddress, gas:208408})
-                                     .then(function(){
-                                     SPVCollectionAccount=0
-                                     couponId=couponId+1
-                                     })
-                                 }
-                                 else
-                                 couponId=couponId+1
-                             })
-                         }
-                     })
- 
-                })
-              
-              
-              }
-              else
-              installmentId=installmentId+1
-          
-            })
-            
-  }).everyMinute().run()
-  
-} */
 
 //------------------------------------------------------------------------
 // Get Blockchain Events
@@ -820,13 +674,11 @@ app.post('/api/payments/refundOrCancel', (req,res)=>{
     .end( async function (response) { 
       
         if (response.error) throw new Error(response.error); 
-        AddRecordToSPVCollectionAccount(0,(-value), JSON.parse(response.raw_body).pspReference, 'Refund')
         //update blockchain with new status   
         await murabahaContractInstance.methods.UpdateInstallment(installmentId,2,JSON.parse(response.raw_body).pspReference,(-value),"SEPA")
                     .send({from:ownerAddress, gas:208408})
                     .then(function(result){
-                        SPVCollectionAccount= SPVCollectionAccount-value
-                        res.send({'hash': result.transactionHash, "pspReference":JSON.parse(response.raw_body).pspReference, "response":JSON.parse(response.raw_body).response })
+                      res.send({'hash': result.transactionHash, "pspReference":JSON.parse(response.raw_body).pspReference, "response":JSON.parse(response.raw_body).response })
                     })
   });
 
@@ -940,26 +792,19 @@ function AddRecordToSPVCollectionAccount(timestamp, value, transactionId,type)
   )
 }
 
-async function GetSPVCollectionBalance()
-{
-  await db.all('select sum(value) from spv_collection_account', (err,rows)=>{
-    return rows[0].value
-  })
-}
 //------------------------------------------------------------------------
 // Deploy smart contracts
 //------------------------------------------------------------------------
 app.post('/api/contracts/deploy/sukuk', async (req,res)=>{ 
-  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  const x = spawn('node', ['deploy_sukuk_smart_contract.js'],options);
+
+  await deployer.deploySukukSmartContract();
   res.json({
     'msg': 'Sukuk smart contract sent for deployment! WAIT CONFIRMATION ...'
   })  
 })
 
 app.post('/api/contracts/deploy/murabaha', async (req,res)=>{ 
-  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc']};
-   const y = spawn('node', ['deploy_murabaha_smart_contract.js'], options);
+  await deployer.deployMurabahaSmartContract();
   res.json({
     'msg': 'Murabaha smart contracts is sent for deployment! WAIT CONFIRMATION ...'
   })  
@@ -970,7 +815,6 @@ app.get('/api/contracts/status', (req,res)=>{
     res.json(rows[0])
   })
 })
-
 
 app.post('/api/contracts/reset', (req,res)=>{
   db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{

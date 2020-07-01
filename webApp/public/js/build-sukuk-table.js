@@ -15,7 +15,7 @@ $( document ).ready(function() {
                     $("#coupons-table").find('tbody')
                     .append("<tr>"+
                             "<td>"+(element.id)+"</td>"+
-                            "<td>"+timeConverter(element.timestamp)+"</td>"+
+                            "<td>"+(element.timestamp)+"</td>"+
                             "<td>"+(element.capital)/100+" &euro;</td>"+
                             "<td>"+(element.reumn)/100+" &euro;</td>"+
                             "<td>"+(element.rembCapital)/100+" &euro;</td>"+
