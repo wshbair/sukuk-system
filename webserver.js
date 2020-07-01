@@ -15,7 +15,7 @@ const HDWalletProvider = require("truffle-hdwallet-provider");
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const {spawn } = require('child_process');
-
+const broadcaster = require('./broadcaster')
 
 const options = {
   defaultAccount: '0x9fc3d36C008ACDb4f1Aa15046850050478a988A1',
@@ -135,7 +135,7 @@ try
 {
 //Murabaha
 //var cxcMurabaha = require("./truffle/contracts/CXCMurabaha.json");
-//var murabahaContractAddr=Object.values(cxcMurabaha.networks)[0].address;
+//var murabahaContractAddr=Object.values(cxcMurabaha.networks)[1].address;
 
 var cxcMurabaha = require("./truffle/contracts/CXCMurabaha.json");
 var murabahaContractAddr= require("./murabaha_contract_address.json").address
@@ -143,7 +143,7 @@ var murabahaContractInstance= new web3.eth.Contract(cxcMurabaha.abi,murabahaCont
 
 //Sukuk 
 //var cxcSukuk = require("./truffle/contracts/CXCSukuk.json");
-//var sukukContractAddr=Object.values(cxcSukuk.networks)[0].address;
+//var sukukContractAddr=Object.values(cxcSukuk.networks)[1].address;
 
 var cxcSukuk = require("./truffle/contracts/CXCSukuk.json");
 var sukukContractAddr= require("./sukuk_contract_address.json").address
@@ -539,7 +539,7 @@ app.post('/api/add_contracts', function(req,res){
 app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
   filePath='./webApp/uploads/'+req.file.originalname
   scheduleType=req.body.scheduleType
-  currentTime = (new Date().getTime()/1000 | 0)+(4*60)
+  currentTime = (new Date().getTime()/1000 | 0)+(30*60)
   var x=0
   var y=0
   //clean tables
@@ -549,15 +549,15 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
   xlsxFile(filePath).then((rows) => { 
     rows.shift();
       for (i in rows){
-        //timestamp = parseInt((new Date(rows[i][0]).getTime() / 1000).toFixed(0))
-        if(scheduleType.localeCompare("installments"==0))
-          {
-            timestamp = currentTime+(60*i) // rows[i][0] //1 minute
-          }
-          else
-          {
-            timestamp=currentTime+(60*6*i)// coupon every 6 minutes
-          }
+        timestamp = rows[i][0] // parseInt((new Date().getTime() / 1000).toFixed(0))
+        // if(scheduleType.localeCompare("installments"==0))
+        //   {
+        //     timestamp = currentTime+(60*i*10) // rows[i][0] //1 minute
+        //   }
+        //   else
+        //   {
+        //     timestamp= currentTime+(60*6*i*10)// coupon every 6 minutes
+        //   }
 
         Capital=parseInt((rows[i][2])*100).toFixed(0)
         Remun=parseInt((rows[i][3])*100).toFixed(0)
@@ -586,14 +586,14 @@ app.post('/api/upload_schedule', upload.single("uploadfile"), (req, res) =>{
 //------------------------------------------------------------------------
 // we need to resume from where it stopped
 app.post('/api/broadcast_coupons_schedule', async (req,res)=>{
- // const compute = fork('broadcastCoupon.js',[], {detached:true});
-  const options = {silent:false,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  child = spawn('node', ['broadcastCoupon.js'], options);
-  child.on('message', (data) => {
-      console.log(data);
-      child.unref();
-      process.exit(0);
-  });
+  // const options = {silent:false,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  // child = spawn('node', ['broadcastCoupon.js'], options);
+  // child.on('message', (data) => {
+  //     console.log(data);
+  //     child.unref();
+  //     process.exit(0);
+  // });
+  broadcaster.broadcastCoupon()
 
   res.json({
     'msg': 'Coupons are sent! WAIT CONFIRMATION ...'
@@ -604,15 +604,14 @@ app.post('/api/broadcast_coupons_schedule', async (req,res)=>{
 // Broadcast installments schedule in blockchain
 //------------------------------------------------------------------------
 app.post('/api/broadcast_installments_schedule', (req,res)=>{
-  //const installments = fork('broadcastInstallments.js',{detached:true})
-
-  const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
-  child = spawn('node', ['broadcastInstallments.js'], options);
-  child.on('message', (data) => {
-      console.log(data);
-      child.unref();
-      process.exit(0);
-  });
+  broadcaster.broadcastInstallments()
+  // const options = {silent:true,  detached:true,  stdio: [null, null, null, 'ipc'] };
+  // child = spawn('node', ['broadcastInstallments.js'], options);
+  // child.on('message', (data) => {
+  //     console.log(data);
+  //     child.unref();
+  //     process.exit(0);
+  // });
 
   res.json({
     'msg': 'Installments are sent! WAIT CONFIRMATION ...'

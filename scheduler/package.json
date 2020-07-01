@@ -1,0 +1,19 @@
+{
+  "name": "scheduler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Wazen shbair",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-cron": "^2.0.3",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "unirest": "^0.6.0",
+    "web3": "^1.2.9"
+  }
+}
