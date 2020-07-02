@@ -596,9 +596,9 @@ app.post('/api/broadcast_installments_schedule', (req,res)=>{
 app.post('/api/trigger_schedule',(req,res)=>{
   try {
     // Call the schedular API 
-    var req = unirest('POST', 'http://localhost:4000/api/schedules/start')
-    .end(function (res) { 
-      if (res.error)
+    var request = unirest('POST', 'http://localhost:4000/api/schedules/start')
+    .end(function (result) { 
+      if (result.error)
       console.log("Error in trigger schedule")
       else
       {
@@ -752,7 +752,7 @@ app.get('/api/verification/counterparts', (req,res)=>{
 }) 
 
 app.post('/api/verification/send2notary', (req,res)=>{
-  db.run("INSERT INTO notary (status) values(?)", 1, (err,rows)=>{
+  db.run("INSERT INTO notary (status, date) values(?,?)", 1, new Date().toLocaleString(), (err,rows)=>{
       if(err){            
           console.log(err)
           res.sendStatus(404)
@@ -762,7 +762,7 @@ app.post('/api/verification/send2notary', (req,res)=>{
     })   
 })
 app.get('/api/notary/records', (req,res)=>{
-  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
+  db.all('SELECT * FROM notary WHERE status=1 ORDER by id DESC LIMIT 1', (err,rows)=>{
     res.json(rows[0])
     
   })
