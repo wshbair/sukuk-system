@@ -43,30 +43,16 @@
                         
                         <div id="msg" class="ui message" style="display: none;"></div>
 
-                        <table id="accountdetails" class="ui single line small table">
+                        <table id="transactionRecords" class="ui single line small table">
                                 <thead>
                                     <tr>
-                                        <th>Version</th>
+                                        <th>Id</th>
                                         <th>Date </th>
                                         <th class="center aligned">Actions</th>
                                     </tr>
                                 </thead> 
                                 <tbody>
-                                    <tr>
-                                        <td>Version1.0</td>
-                                        <td>23 April 2020 - 12:00 </td>
-                                        
-                                        <td class="left aligned">
-                                            <button id="ShowButton" class="tiny primary ui  button" onclick="view()"> Show/Hide Application </button><br><br>
-                                            <button id="sukukBtn" class="tiny primary ui button" onclick="DeploySukuk()"> (1) Deploy SUKUK contract </button><div id="sukukLoading" class="ui tiny inline loader"></div>	 <br><br>
-                                            <button id="murabahBtn" class="tiny primary ui  button" onclick="DeployMurabaha()"> (2) Deploy MURABAHA contract </button><div id="murabahaLoading" class="ui tiny inline loader"></div> <br><br>
-                                            <button id="couponBtn" class="tiny primary ui  button" onclick="BroadcastCoupons()"> (3) Broadcast Coupons </button><div id="couponLoading" class="ui tiny inline loader"></div><br><br>
-                                            <button id="installmentBtn" class="tiny primary  ui button" onclick="BroadcastInstallments()"> (4) Broadcast Installments </button><div id="installmentLoading" class="ui tiny inline loader"></div><br><br>
-                                            <button id="paymentBtn" class="tiny primary  ui button" onclick="TriggerSchedule()"> (5) Trigger Payments </button><div id="paymentTriggerMsg" class="ui message" style="display: none;"></div> <br><br>
-                                            <button id="paymentBtn" class="tiny red  ui button" onclick="ResetAll()"> Reset All </button>
-
-                                        </td>
-                                    </tr>
+                                    
                                     
                                 </tbody>
                         </table>

@@ -1,14 +1,29 @@
 $( document ).ready(function() {
     loadData();
-    
-	(function worker() {
+ 	(function worker() {
+ 		$("#transactionRecords").find("tr:gt(0)").remove();
 		$('#notaryLoading').addClass('active')
         $.ajax({
             type: "GET",
             url: "/api/notary/records",
                 success: function(result){
-					console.log(result)
-					if(parseInt(result.murabaha_smart_contract)==1)
+					if(result)
+					{
+						$('#transactionRecords tr:last').after(
+						'<tr>'+
+							'<td>'+result.id+'</td>'+
+							'<td>23 '+result.date+' </td>'+                                    
+							'<td class="left aligned">'+
+								'<button id="ShowButton" class="tiny primary ui  button" onclick="view()"> Show/Hide Application </button><br><br>'+
+								'<button id="sukukBtn" class="tiny primary ui button" onclick="DeploySukuk()"> (1) Deploy SUKUK contract </button><div id="sukukLoading" class="ui tiny inline loader"></div>	 <br><br>'+
+								'<button id="murabahBtn" class="tiny primary ui  button" onclick="DeployMurabaha()"> (2) Deploy MURABAHA contract </button><div id="murabahaLoading" class="ui tiny inline loader"></div> <br><br>'+
+								'<button id="couponBtn" class="tiny primary ui  button" onclick="BroadcastCoupons()"> (3) Broadcast Coupons </button><div id="couponLoading" class="ui tiny inline loader"></div><br><br>'+
+								'<button id="installmentBtn" class="tiny primary  ui button" onclick="BroadcastInstallments()"> (4) Broadcast Installments </button><div id="installmentLoading" class="ui tiny inline loader"></div><br><br>'+
+								'<button id="paymentBtn" class="tiny primary  ui button" onclick="TriggerSchedule()"> (5) Trigger Payments </button><div id="paymentTriggerMsg" class="ui message" style="display: none;"></div> <br><br>'+
+								'<button id="paymentBtn" class="tiny red  ui button" onclick="ResetAll()"> Reset All </button>'+
+							'</td>'+
+						'</tr>');
+						if(parseInt(result.murabaha_smart_contract)==1)
 					{
 						$('#murabahBtn').prop('disabled',true)
 						$('#msg').html(' Smart contract deployment confirmed')
@@ -53,6 +68,8 @@ $( document ).ready(function() {
 					else
 						$('#paymentBtn').prop('disabled',false)
 
+					}
+					
 						
 					}, 
 					
