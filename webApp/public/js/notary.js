@@ -12,7 +12,7 @@ $( document ).ready(function() {
 						$('#transactionRecords tr:last').after(
 						'<tr>'+
 							'<td>'+result.id+'</td>'+
-							'<td>23 '+result.date+' </td>'+                                    
+							'<td>'+result.date+' </td>'+                                    
 							'<td class="left aligned">'+
 								'<button id="ShowButton" class="tiny primary ui  button" onclick="view()"> Show/Hide Application </button><br><br>'+
 								'<button id="sukukBtn" class="tiny primary ui button" onclick="DeploySukuk()"> (1) Deploy SUKUK contract </button><div id="sukukLoading" class="ui tiny inline loader"></div>	 <br><br>'+
@@ -20,7 +20,7 @@ $( document ).ready(function() {
 								'<button id="couponBtn" class="tiny primary ui  button" onclick="BroadcastCoupons()"> (3) Broadcast Coupons </button><div id="couponLoading" class="ui tiny inline loader"></div><br><br>'+
 								'<button id="installmentBtn" class="tiny primary  ui button" onclick="BroadcastInstallments()"> (4) Broadcast Installments </button><div id="installmentLoading" class="ui tiny inline loader"></div><br><br>'+
 								'<button id="paymentBtn" class="tiny primary  ui button" onclick="TriggerSchedule()"> (5) Trigger Payments </button><div id="paymentTriggerMsg" class="ui message" style="display: none;"></div> <br><br>'+
-								'<button id="paymentBtn" class="tiny red  ui button" onclick="ResetAll()"> Reset All </button>'+
+								'<button id="paymentBtn" class="tiny red  ui button" onclick="ResetAll()"> Return Back </button>'+
 							'</td>'+
 						'</tr>');
 						if(parseInt(result.murabaha_smart_contract)==1)
@@ -30,7 +30,10 @@ $( document ).ready(function() {
 						$('#murabahaLoading').removeClass('active') 
 					}
 					else
+					{
 						$('#murabahBtn').prop('disabled',false)
+ 					}
+						
 					if(parseInt(result.sukuk_smart_contract)==1)
 					{
 						$('#sukukBtn').prop('disabled',true)
@@ -38,7 +41,9 @@ $( document ).ready(function() {
 						$('#sukukLoading').removeClass('active') 
 					}
 					else
+					{
 						$('#sukukBtn').prop('disabled',false)
+ 					}
 
 					if(result.installment_broadcasted==1)
 					{
@@ -47,7 +52,10 @@ $( document ).ready(function() {
 						$('#installmentLoading').removeClass('active') 
 					}
 					else
+					{
 						$('#installmentBtn').prop('disabled',false)
+ 
+					}
 
 					if(result.coupon_broadcasted==1)
 					{
@@ -57,7 +65,10 @@ $( document ).ready(function() {
 
 					}
 					else
+					{
 						$('#couponBtn').prop('disabled',false)					
+ 
+					}
 					
 					if(result.trigger_payment==1)
 					{
@@ -68,14 +79,12 @@ $( document ).ready(function() {
 					else
 						$('#paymentBtn').prop('disabled',false)
 
-					}
-					
-						
+					}		
 					}, 
 					
                     complete: function() {
 						$('#notaryLoading').removeClass('active')
-                        setTimeout(worker, 20000);
+                        setTimeout(worker, 30000);
                       }        
                    })
       })();
@@ -83,10 +92,13 @@ $( document ).ready(function() {
 
 function update(field)
 {
+	var data = {
+        'updatedField':field,
+	}
     $.ajax({
         type: "POST",
         url: "/api/notary/update",
-        data: {"filed": field},
+        data: data,
         success: function(result){
             console.log(result)            
         }
@@ -262,7 +274,7 @@ async function BroadcastCoupons(e)
  			$('#msg').show()
 			$('#msg').html(response.msg)
 			$('#msg').addClass('success')
-            update('coupon_broadcasted')
+            //update('coupon_broadcasted')
 		},
 		error: function(err){
 			console.log(err)	
@@ -285,7 +297,7 @@ function BroadcastInstallments()
  			$('#msg').show()
 			$('#msg').html(response.msg)
 			$('#msg').addClass('success')
-            update('installment_installments')
+            //update('installment_installments')
 		},
 		error: function(err){
 			console.log(err)
@@ -321,6 +333,7 @@ function TriggerSchedule()
 //--------------------------------------------------------
 function DeploySukuk()
 {
+	$('#msg').hide()
 	$('#msg').html("")  
 	$('#msg').removeClass('success')
     $('#sukukLoading').addClass('active')
@@ -348,6 +361,7 @@ function DeploySukuk()
 function DeployMurabaha()
 {
 	$('#msg').html("")
+	$('#msg').hide()
 	$('#msg').removeClass('success')
     $('#murabahaLoading').addClass('active')
     $.ajax({

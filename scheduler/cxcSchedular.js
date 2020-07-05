@@ -62,8 +62,8 @@ var cxcScheduler = {
     resetSchedular: function(){
         var jobList = schedule.scheduledJobs; //Get All scheduled jobs
         Object.values(jobList).map(job => {
-        console.log("Each Job", job.name);
-        cron.cancelJob(job.name);
+        //console.log("Job name", job.name);
+        schedule.cancelJob(job.name);
     })
     }
 }

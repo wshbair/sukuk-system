@@ -495,7 +495,6 @@ function Send2Notary()
 		type: "POST",
 		url: "/api/verification/send2notary",
 			success: async function(result){
-				console.log(result[0])
 				$('#transactionSetup').removeClass('active')
 				$('#SaveStep1_msg').addClass('success')
 				$('#SaveStep1_msg').html('Request sent to Notary')
@@ -511,12 +510,12 @@ function Send2Notary()
 		}
 	});
 
-	$.ajax({
-        type: "POST",
-        url: "/api/contracts/reset",
-        success: function(result){     
-        },
-        error: function(err){
-        }
-    });
+	// $.ajax({
+    //     type: "POST",
+    //     url: "/api/contracts/reset",
+    //     success: function(result){     
+    //     },
+    //     error: function(err){
+    //     }
+    // });
 }

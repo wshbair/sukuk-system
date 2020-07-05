@@ -96,7 +96,7 @@ switch(type){
 
 function timeConverter(UNIX_timestamp){
     var a = new Date(UNIX_timestamp * 1000);
-    return a.toLocaleDateString()
+     return a.toLocaleString()
   }
 
 

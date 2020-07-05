@@ -746,14 +746,14 @@ app.get('/api/verification/files', (req,res)=>{
 })
 
 app.get('/api/verification/counterparts', (req,res)=>{
-  db.all('SELECT  validation1A,validation1B,validation1C  FROM counterparts ORDER by id DESC LIMIT 1', (err,rows)=>{
+  db.all('SELECT  validation1A,validation1B,validation1C FROM counterparts ORDER by id DESC LIMIT 1', (err,rows)=>{
     res.json(rows)
   })
 }) 
 
-app.post('/api/verification/send2notary', (req,res)=>{
-  db.run("INSERT INTO notary (status, date) values(?,?)", 1, new Date().toLocaleString(), (err,rows)=>{
-      if(err){            
+app.post('/api/verification/send2notary', async (req,res)=>{
+  db.run('INSERT INTO notary (active, date) values(?,?)',1, new Date().toLocaleString(), (err,rows)=>{
+          if(err){            
           console.log(err)
           res.sendStatus(404)
       }
@@ -762,19 +762,20 @@ app.post('/api/verification/send2notary', (req,res)=>{
     })   
 })
 app.get('/api/notary/records', (req,res)=>{
-  db.all('SELECT * FROM notary WHERE status=1 ORDER by id DESC LIMIT 1', (err,rows)=>{
+  db.all('SELECT * FROM notary WHERE active=1 ORDER by id DESC LIMIT 1', (err,rows)=>{
     res.json(rows[0])
     
   })
 })
 app.post('/api/notary/update', (req,res)=>{
+  console.log(req.body)
+  var updatedField = req.body.updatedField
+  console.log('Update ', updatedField)
   db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
-    var updatedField = req.body.field
     let sql = `UPDATE notary SET `+updatedField +` = ?  WHERE id = ?`;
     db.run(sql,1,rows[0].id, (err,rows)=>{
       res.sendStatus(200)
     })
-    
   })
 })
 
@@ -799,14 +800,14 @@ app.post('/api/contracts/deploy/sukuk', async (req,res)=>{
 
   await deployer.deploySukukSmartContract();
   res.json({
-    'msg': 'Sukuk smart contract sent for deployment! WAIT CONFIRMATION ...'
+    'msg': 'Sukuk smart contract sent for deployment ...'
   })  
 })
 
 app.post('/api/contracts/deploy/murabaha', async (req,res)=>{ 
   await deployer.deployMurabahaSmartContract();
   res.json({
-    'msg': 'Murabaha smart contracts is sent for deployment! WAIT CONFIRMATION ...'
+    'msg': 'Murabaha smart contracts is sent for deployment ...'
   })  
 })
 
@@ -817,16 +818,25 @@ app.get('/api/contracts/status', (req,res)=>{
 })
 
 app.post('/api/contracts/reset', (req,res)=>{
-  db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
-    db.run('UPDATE notary SET coupon_broadcasted = 0, installment_broadcasted=0,'+
-    'trigger_payment=0, sukuk_smart_contract=0, murabaha_smart_contract=0 WHERE id = ?',
-    rows[0].id, (err, rows)=>{
-      res.sendStatus(200)
-      if(err) console.log(err)
+  console.log('SOME ONE CALL REST ')
+  // db.all('SELECT * FROM notary ORDER by id DESC LIMIT 1', (err,rows)=>{
+  //   db.run('UPDATE notary SET active=0, coupon_broadcasted = 0, installment_broadcasted=0,'+
+  //   'trigger_payment=0, sukuk_smart_contract=0, murabaha_smart_contract=0 WHERE id = ?',
+  //   rows[0].id, (err, rows)=>{
+  //     res.sendStatus(200)
+  //     if(err) console.log(err)
+  //   })
+  // })
+  //clean tables
+  db.run("DELETE FROM notary", (err,rows)=>{
+    db.run('UPDATE temp_coupons SET inBlockchain = NULL;' , (err,rows)=>{
+      db.run('UPDATE temp_installments SET inBlockchain = NULL;', (err,rows)=>{
+        res.sendStatus(200)
+      })
     })
   })
-  db.run('UPDATE temp_coupons SET inBlockchain = NULL;')
-  db.run('UPDATE temp_installments SET inBlockchain = NULL;')
+  
+  
 
 })
 //------------------------------------------------------------------------
