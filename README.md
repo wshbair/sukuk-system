@@ -13,23 +13,40 @@ The sytem has two nodejs service, the first is the core service managing the who
 An Ethereum client tool like testrcp or Ganache <br/>
 
 ### Smart Contracts Compile
-Edit the truffle.con
 
+To install truffle
+
+```sh
+npm install -g truffle
 ```
-cd truffle\
-npm install
-truffle compile 
+
+To compile and run the test unit code follow the steps:
+
+1. Compile the smart contracts 
+```sh
+truffle compile
+```
+2. Migrate smart contract to Ethereum client
+```sh
 truffle migrate --reset
 ```
-
-
-
-
-```
+3. Run the test 
+```sh
+truffle test
 ```
 
+### Server Running 
 
+```sh
+npm install -g
+sudo npm start
 ```
+Home page served on localhost:80 
+
+### Scheduler Running 
+```sh
+npm install -g
+npm start
 ```
 
 ## Built With
