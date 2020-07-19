@@ -9,31 +9,34 @@ This project is intended to tokenize mortgage sukuk via blockchain technology. T
 
 The sytem has two nodejs service, the first is the core service managing the whole life cycle of the system and serve the user interface. The second service is the scheduler that will feed the cron-scheduler with the records retrived from blockchain.
 
+### Prerequisites
+An Ethereum client tool like testrcp or Ganache <br/>
+
 ### Smart Contracts Compile
+Edit the truffle.con
 
 ```
-cd truffle
-```
-
-```
+cd truffle\
 npm install
-```
-
-
-```
 truffle compile 
-```
-
-
-```
 truffle migrate --reset
+```
+
+
+
+
+```
+```
+
+
+```
 ```
 
 ## Built With
 
-* [NodeJS](http://www.dropwizard.io/1.0.2/docs/) - Used to Backend development
-* [Web3](http://www.dropwizard.io/1.0.2/docs/) - Interaction with Ethrereum blockchain 
-* [Ethrereum](https://maven.apache.org/) - Used as blockchain platform
+* [NodeJS](https://nodejs.org/en/) - Used to Backend development
+* [Web3](https://web3js.readthedocs.io/en/v1.2.11/) - Interaction with Ethereum blockchain 
+* [Ethereum](https://ethereum.org/en/) - Used as blockchain platform
 * [Solidity](https://solidity.readthedocs.io/en/v0.4.24/introduction-to-smart-contracts.html) - Used for smart contracts coding
 * [Truffle Suite](https://www.trufflesuite.com/) - Used for smart contracts development and unit testing 
 * [Infura](https://infura.io/dashboard) - Used for accessing Ethereum blockchain 
