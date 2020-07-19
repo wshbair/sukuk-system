@@ -43,7 +43,7 @@ truffle migrate --reset
 
 * **Wazen Shbair** 
 * **Alex Yakubov**  
-* **Taha Lahbabi **  
+* **Taha Lahbabi**  
 
 ## License
 
